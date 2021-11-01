@@ -19,6 +19,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(express.json());
 app.use("/indie", indieRoutes);
 app.use("/auth", authRoutes);
 app.use("/contact", contactRoutes);
