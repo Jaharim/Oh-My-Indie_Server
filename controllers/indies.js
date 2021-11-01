@@ -90,25 +90,28 @@ exports.postSupportMessage = (req, res, next) => {
 };
 
 exports.postIndie = (req, res, next) => {
-  const { name, imageUrl, description, sns } = req.body;
-  const newIndie = {
+  const { number, name, imageUrl, description, sns } = req.body;
+  const newIndie = new Indie({
+    number,
     name,
     imageUrl,
     description,
     sns,
-  };
+  });
+
+  newIndie.save();
+
   res.status(200).json({ indie: newIndie });
 };
 
 exports.getIndieInfo = (req, res, next) => {
   console.log("why...");
   const indieName = req.params.indieName;
-  console.log(indieName);
-  const willBeEditedIndie = DUMMY_INDIE.find((p) => {
-    return p.name === indieName;
-  });
-  //Indie.findOne({ name: params });
-  res.json({ willBeEditedIndie });
+  const willBeEditedIndie = Indie.findOne({ name: indieName }).then(
+    (result) => {
+      res.status(200).json({ indie: result });
+    }
+  );
 };
 
 exports.editIndie = (req, res, next) => {

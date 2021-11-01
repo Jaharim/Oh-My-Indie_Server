@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const indieSchema = new Schema({
+  number: {
+    type: Number,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
