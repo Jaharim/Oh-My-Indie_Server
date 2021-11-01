@@ -88,3 +88,39 @@ exports.getSupportMessage = (req, res, next) => {
 exports.postSupportMessage = (req, res, next) => {
   console.log("support-message/post");
 };
+
+exports.postIndie = (req, res, next) => {
+  const { name, imageUrl, description, sns } = req.body;
+  const newIndie = {
+    name,
+    imageUrl,
+    description,
+    sns,
+  };
+  res.status(200).json({ indie: newIndie });
+};
+
+exports.getIndieInfo = (req, res, next) => {
+  console.log("why...");
+  const indieName = req.params.indieName;
+  console.log(indieName);
+  const willBeEditedIndie = DUMMY_INDIE.find((p) => {
+    return p.name === indieName;
+  });
+  //Indie.findOne({ name: params });
+  res.json({ willBeEditedIndie });
+};
+
+exports.editIndie = (req, res, next) => {
+  const params = req.params.indieName;
+  const willBeEditedIndie = Indie.findOne({ name: params });
+  const { name, imageUrl, description, sns } = req.body;
+  willBeEditedIndie.name = name;
+  willBeEditedIndie.imageUrl = imageUrl;
+  willBeEditedIndie.description = description;
+  willBeEditedIndie.sns = sns;
+
+  res.status(200).json({ indie: willBeEditedIndie });
+};
+
+exports.deleteIndie = (req, res, next) => {};

@@ -22,13 +22,11 @@ const indieSchema = new Schema({
     {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
   ],
   supports: [
     {
       type: Object,
-      required: true,
     },
   ],
 });
