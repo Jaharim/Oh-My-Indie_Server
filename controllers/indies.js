@@ -1,129 +1,161 @@
 const Indie = require("../models/indie");
 const User = require("../models/user");
+const Support = require("../models/support");
 
-const DUMMY_INDIE = [
-  {
-    id: "p1",
-    number: 1,
-    name: "최정윤",
-    description: {
-      company: "매직스트로베리 사운드",
-      song: "사라져",
-      birth: "1994.05.23.",
-      content: "가나다라마바사<br />아자차카타파하",
-    },
-    image: "image",
-    sns: {
-      youtube: "https://www.youtube.com/watch?v=JjPOEYwcd8Q",
-      instagram: "https://www.instagram.com/moodyoon_/",
-      soundcloud: "",
-    },
-    like: "none",
-    bookmark: "none",
-  },
-  {
-    id: "p1",
-    number: 2,
-    name: "최정윤2",
-    description: {
-      company: "매직스트로베리 사운드",
-      song: "사라져",
-      birth: "1994.05.23.",
-      content: "가나다라마바사<br />아자차카타파하",
-    },
-    image: "image",
-    sns: {
-      youtube: "https://www.youtube.com/watch?v=JjPOEYwcd8Q",
-      instagram: "https://www.instagram.com/moodyoon_/",
-      soundcloud: "",
-    },
-    like: "none",
-    bookmark: "none",
-  },
-];
+const HttpError = require("../models/http-error");
+const mongoose = require("mongoose");
 
-const DUMMY_SUPPORT_MESSAGE = [
-  {
-    title: "행복하세요",
-    message: "가나다라마바사",
-    name: "유재석",
-    indie: "최정윤",
-  },
-  {
-    title: "건강하세요",
-    message: "아자차카타파하",
-    name: "하하",
-    indie: "최정윤",
-  },
-];
-
-exports.getSearchedIndie = (req, res, next) => {
-  console.log("getSearchedIndie");
+exports.getSearchedIndie = async (req, res, next) => {
   const indieName = req.params.indieName;
-  const indie = DUMMY_INDIE.find((p) => {
-    return p.name === indieName;
-  });
-  res.json({ indie });
+
+  let indie;
+  try {
+    indie = Indie.findOne({ name: indieName });
+  } catch (err) {
+    const error = new HttpError("Contact Message Submit failed.", 500);
+    return next(error);
+  }
+
+  res.json({ indie: indie });
 };
 
-exports.getRandomIndie = (req, res, next) => {
-  console.log("good");
-  const randomIndieNumber = Math.floor(Math.random() * DUMMY_INDIE.length) + 1;
-  const randomIndie = DUMMY_INDIE.find((p) => {
-    return p.number === randomIndieNumber;
-  });
-  console.log(randomIndieNumber);
+exports.getRandomIndie = async (req, res, next) => {
+  let indieCount;
+  try {
+    indieCount = await Indie.find().countDocuments();
+  } catch (err) {
+    const error = new HttpError("Indies Counting failed.", 500);
+    return next(error);
+  }
+
+  const randomIndieNumber = Math.floor(Math.random() * indieCount) + 1;
+
+  let randomIndie;
+  try {
+    randomIndie = await Indie.find({ number: randomIndieNumber });
+  } catch (err) {
+    const error = new HttpError("Bringing Random Indie failed.", 500);
+    return next(error);
+  }
+
   res.json({ randomIndie });
 };
 
-exports.getSupportMessage = (req, res, next) => {
-  console.log("support-message");
+exports.getSupportMessage = async (req, res, next) => {
   const indieName = req.params.indieName;
-  const supportMessage = DUMMY_SUPPORT_MESSAGE.filter((p) => {
-    return p.indie === indieName;
-  });
+
+  let supportMessage;
+  try {
+    supportMessage = await Support.find({
+      indieName: indieName,
+    });
+  } catch (err) {
+    const error = new HttpError("Getting Support Message failed", 500);
+    return next(error);
+  }
+
   res.json({ supportMessage });
 };
 
-exports.postSupportMessage = (req, res, next) => {
-  console.log("support-message/post");
-};
-
-exports.postIndie = (req, res, next) => {
-  const { number, name, imageUrl, description, sns } = req.body;
-  const newIndie = new Indie({
-    number,
-    name,
-    imageUrl,
-    description,
-    sns,
+exports.postSupportMessage = async (req, res, next) => {
+  const { title, message, creator } = req.body;
+  const indieName = req.params.indieName;
+  const supportMessage = new Support({
+    title,
+    message,
+    creator,
+    indieName,
   });
 
-  newIndie.save();
+  let user;
+  let indie;
 
-  res.status(200).json({ indie: newIndie });
+  try {
+    user = await User.findById(creator);
+  } catch (err) {
+    const error = new HttpError("Creating Support Message failed,", 500);
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError("Could not find user", 404);
+    return next(error);
+  }
+
+  console.log(user);
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await supportMessage.save({ session: sess });
+    user.supports.push(supportMessage);
+    await user.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError("Posting new support message failed", 500);
+    return next(error);
+  }
+
+  try {
+    indie = await Indie.findOne({ name: indieName });
+  } catch (err) {
+    const error = new HttpError("Creating Support Message failed,", 500);
+    return next(error);
+  }
+
+  if (!indie) {
+    const error = new HttpError("Could not find indie", 404);
+    return next(error);
+  }
+
+  console.log(indie);
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await supportMessage.save({ session: sess });
+    indie.supports.push(supportMessage);
+    await indie.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError("Posting new support message failed", 500);
+    return next(error);
+  }
+
+  res.json({ supportMessage });
 };
 
-exports.getIndieInfo = (req, res, next) => {
-  console.log("why...");
-  const indieName = req.params.indieName;
-  const willBeEditedIndie = Indie.findOne({ name: indieName }).then(
-    (result) => {
-      res.status(200).json({ indie: result });
-    }
-  );
+exports.deleteSupportMessage = async (req, res, next) => {
+  const supportMessageId = req.params.supportMessageId;
+
+  let userSupportMessage;
+  try {
+    userSupportMessage = await Support.findById(supportMessageId).populate(
+      "creator"
+    );
+  } catch (err) {
+    const error = new HttpError("find Support Message failed,", 500);
+    return next(error);
+  }
+
+  if (!userSupportMessage) {
+    const error = new HttpError("Could not find Support Message", 404);
+    return next(error);
+  }
+
+  console.log(userSupportMessage);
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await userSupportMessage.deleteOne({ session: sess });
+    userSupportMessage.creator.supports.pull(userSupportMessage);
+    await userSupportMessage.creator.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError("deleting user's support part failed", 500);
+    return next(error);
+  }
+
+  res.json({ userSupportMessage });
 };
-
-exports.editIndie = (req, res, next) => {
-  const params = req.params.indieName;
-  const willBeEditedIndie = Indie.findOne({ name: params });
-  const { name, imageUrl, description, sns } = req.body;
-  willBeEditedIndie.name = name;
-  willBeEditedIndie.imageUrl = imageUrl;
-  willBeEditedIndie.description = description;
-  willBeEditedIndie.sns = sns;
-
-  res.status(200).json({ indie: willBeEditedIndie });
-};
-
-exports.deleteIndie = (req, res, next) => {};

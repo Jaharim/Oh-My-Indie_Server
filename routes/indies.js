@@ -21,14 +21,6 @@ router.get("/:indieName", indieController.getSearchedIndie);
 
 router.get("/:indieName/support", indieController.getSupportMessage);
 
-router.post("/admin/addIndie", indieController.postIndie);
-
-router.get("/admin/:indieName/editIndie", indieController.getIndieInfo);
-
-router.patch("/admin/:indieName/editIndie", indieController.editIndie);
-
-router.delete("/admin/:indieName/deleteIndie", indieController.deleteIndie);
-
 router.post(
   "/:indieName/support",
   /*  [
@@ -37,7 +29,14 @@ router.post(
   ], */
   indieController.postSupportMessage
 );
+
+router.delete(
+  "/:indieName/support/:supportMessageId",
+  indieController.deleteSupportMessage
+);
+
 /*
+
 
 
 

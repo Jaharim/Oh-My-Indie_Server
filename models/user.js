@@ -18,13 +18,15 @@ const userSchema = new Schema({
     type: String,
     default: "I am new!",
   },
-  like: {
-    type: Array,
-    ref: "Indie",
-  },
+  like: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Indie",
+    },
+  ],
   supports: [
     {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: "Post",
     },
   ],

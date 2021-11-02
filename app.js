@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoKey = require("./config/keys");
 
+const adminRoutes = require("./routes/admin");
 const indieRoutes = require("./routes/indies");
 const authRoutes = require("./routes/auth");
 const contactRoutes = require("./routes/contact");
@@ -19,7 +20,9 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(bodyParser.json());
 app.use(express.json());
+app.use("/admin", adminRoutes);
 app.use("/indie", indieRoutes);
 app.use("/auth", authRoutes);
 app.use("/contact", contactRoutes);

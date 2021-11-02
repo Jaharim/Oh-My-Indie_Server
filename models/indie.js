@@ -24,13 +24,14 @@ const indieSchema = new Schema({
   },
   like: [
     {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: "User",
     },
   ],
   supports: [
     {
-      type: Object,
+      type: mongoose.Types.ObjectId,
+      ref: "Support",
     },
   ],
 });

@@ -11,7 +11,7 @@ const contactSchema = new Schema({
     required: true,
   },
   user: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Types.ObjectId,
     ref: "User",
     required: true,
   },
