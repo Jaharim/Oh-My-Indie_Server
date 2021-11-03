@@ -21,6 +21,8 @@ router.get("/:indieName", indieController.getSearchedIndie);
 
 router.get("/:indieName/support", indieController.getSupportMessage);
 
+router.put("/:indieName/like", indieController.putIndieLike);
+
 router.post(
   "/:indieName/support",
   /*  [

@@ -15,8 +15,9 @@ const supportSchema = new Schema({
     ref: "User",
     required: true,
   },
-  indieName: {
-    type: String,
+  indieId: {
+    type: mongoose.Types.ObjectId,
+    ref: "Indie",
     required: true,
   },
 });
