@@ -11,12 +11,12 @@ router.post(
   "/",
   [
     body("title").trim().not().isEmpty(),
-    body("message").trim().isLength({ min: 5 }),
+    body("content").trim().isLength({ min: 5 }),
   ],
   contactController.submitContactMessage
 );
-
-router.get("/", contactController.submitContactMessage);
+/* 
+router.get("/", contactController.submitContactMessage); */
 
 /* router.get("/status", isAuth, authController.getUserStatus);
 

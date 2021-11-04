@@ -10,6 +10,10 @@ const supportSchema = new Schema({
     type: String,
     required: true,
   },
+  nickname: {
+    type: String,
+    required: true,
+  },
   creator: {
     type: mongoose.Types.ObjectId,
     ref: "User",

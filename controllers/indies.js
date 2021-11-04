@@ -25,7 +25,7 @@ exports.getSearchedIndie = async (req, res, next) => {
     );
     return next(error);
   }
-
+  /* 
   let user;
   try {
     user = await User.findById(userId);
@@ -43,12 +43,21 @@ exports.getSearchedIndie = async (req, res, next) => {
 
   if (like.length > 0) {
     likeClicked = true;
-  }
+  } */
+  let like = [];
 
   res.status(200).json({
     message: "Get Searched Indie's information complete!",
-    indie: indie,
-    like: likeClicked,
+    name: indie.name,
+    imageUrl: indie.imageUrl,
+    company: indie.description.company,
+    song: indie.description.song,
+    birth: indie.description.birth,
+    content: indie.description.content,
+    youtube: indie.sns.youtube,
+    instagram: indie.sns.instagram,
+    soundcloud: indie.sns.soundcloud,
+    like: like.length,
   });
 };
 
@@ -79,9 +88,13 @@ exports.getRandomIndie = async (req, res, next) => {
     return next(error);
   }
 
+  const likeNumber = randomIndie[0].like.length;
+
   res.status(200).json({
     message: "Get Randome Indie's information complete!",
-    randomIndie,
+    name: randomIndie[0].name,
+    imageUrl: randomIndie[0].imageUrl,
+    like: likeNumber,
   });
 };
 
@@ -108,10 +121,17 @@ exports.getSupportMessage = async (req, res, next) => {
     );
     return next(error);
   }
+  const supportMessageJson = [];
+  const toFront = supportMessage.forEach((el) => {
+    let title = el.title;
+    let body = el.message;
+    let creator = el.nickname;
+    supportMessageJson.push({ title, body, creator });
+  });
 
   res
     .status(200)
-    .json({ message: "Get Support Message complete!", supportMessage });
+    .json({ message: "Get Support Message complete!", supportMessageJson });
 };
 
 exports.postSupportMessage = async (req, res, next) => {
@@ -134,15 +154,6 @@ exports.postSupportMessage = async (req, res, next) => {
     return next(error);
   }
 
-  indieId = indie._id.toString();
-
-  const supportMessage = new Support({
-    title,
-    message,
-    creator,
-    indieId,
-  });
-
   let user;
 
   try {
@@ -163,6 +174,18 @@ exports.postSupportMessage = async (req, res, next) => {
     return next(error);
   }
 
+  indieId = indie._id.toString();
+
+  const nickname = user.nickname;
+
+  const supportMessage = new Support({
+    title,
+    message,
+    nickname,
+    creator,
+    indieId,
+  });
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -180,9 +203,12 @@ exports.postSupportMessage = async (req, res, next) => {
     return next(error);
   }
 
-  res
-    .status(201)
-    .json({ message: "Post Support Message complete!", supportMessage });
+  res.status(201).json({
+    message: "Post Support Message complete!",
+    title: supportMessage.title,
+    message: supportMessage.message,
+    creator: user.nickname,
+  });
 };
 
 exports.deleteSupportMessage = async (req, res, next) => {
