@@ -16,9 +16,12 @@ exports.submitContactMessage = async (req, res, next) => {
   try {
     await contactMessage.save();
   } catch (err) {
-    const error = new HttpError("Contact Message Submit failed.", 500);
+    const error = new HttpError(
+      "Saving(Submitting) a Contact Message was failed.",
+      500
+    );
     return next(error);
   }
 
-  res.json({ contactMessage });
+  res.status(201).json({ contactMessage });
 };

@@ -13,18 +13,29 @@ exports.getSearchedIndie = async (req, res, next) => {
   let indie;
   try {
     indie = await Indie.findOne({ name: indieName });
-    console.log(indie._id);
   } catch (err) {
-    const error = new HttpError("getSearchedIndie failed.", 500);
+    const error = new HttpError("Finding indie information was failed.", 500);
+    return next(error);
+  }
+
+  if (!indie) {
+    const error = new HttpError(
+      "A Indie with this indieName could not be found.",
+      404
+    );
     return next(error);
   }
 
   let user;
   try {
     user = await User.findById(userId);
-    console.log(user);
   } catch (err) {
     const error = new HttpError("Find logged in User failed.", 500);
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError("A User with this id could not be found.", 404);
     return next(error);
   }
 
@@ -34,7 +45,11 @@ exports.getSearchedIndie = async (req, res, next) => {
     likeClicked = true;
   }
 
-  res.json({ indie: indie, like: likeClicked });
+  res.status(200).json({
+    message: "Get Searched Indie's information complete!",
+    indie: indie,
+    like: likeClicked,
+  });
 };
 
 exports.getRandomIndie = async (req, res, next) => {
@@ -56,7 +71,18 @@ exports.getRandomIndie = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ randomIndie });
+  if (!randomIndie) {
+    const error = new HttpError(
+      "A Random Indie with this random indieNumber could not be found.",
+      404
+    );
+    return next(error);
+  }
+
+  res.status(200).json({
+    message: "Get Randome Indie's information complete!",
+    randomIndie,
+  });
 };
 
 exports.getSupportMessage = async (req, res, next) => {
@@ -68,11 +94,24 @@ exports.getSupportMessage = async (req, res, next) => {
       indieName: indieName,
     });
   } catch (err) {
-    const error = new HttpError("Getting Support Message failed", 500);
+    const error = new HttpError(
+      "Finding a Support Message by this indie name was failed",
+      500
+    );
     return next(error);
   }
 
-  res.json({ supportMessage });
+  if (!supportMessage) {
+    const error = new HttpError(
+      "This indie's Support Messages could not be found.",
+      404
+    );
+    return next(error);
+  }
+
+  res
+    .status(200)
+    .json({ message: "Get Support Message complete!", supportMessage });
 };
 
 exports.postSupportMessage = async (req, res, next) => {
@@ -83,16 +122,19 @@ exports.postSupportMessage = async (req, res, next) => {
   try {
     indie = await Indie.findOne({ name: indieName });
   } catch (err) {
-    const error = new HttpError("Could not find IndieId", 404);
+    const error = new HttpError("Finding a indie by indieName was failed", 500);
     return next(error);
   }
-  if (!indie) {
-    const error = new HttpError("Could not find indie", 404);
-    return next(error);
-  }
-  indieId = indie._id.toString();
 
-  console.log(indie._id.toString());
+  if (!indie) {
+    const error = new HttpError(
+      "A Indie with this indieName could not be found.",
+      404
+    );
+    return next(error);
+  }
+
+  indieId = indie._id.toString();
 
   const supportMessage = new Support({
     title,
@@ -106,12 +148,18 @@ exports.postSupportMessage = async (req, res, next) => {
   try {
     user = await User.findById(creator);
   } catch (err) {
-    const error = new HttpError("Creating Support Message failed,", 500);
+    const error = new HttpError(
+      "Finding a user by creator Id was failed,",
+      500
+    );
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError("Could not find user", 404);
+    const error = new HttpError(
+      "A User with this creator id could not be found.",
+      404
+    );
     return next(error);
   }
 
@@ -125,11 +173,16 @@ exports.postSupportMessage = async (req, res, next) => {
     await indie.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
-    const error = new HttpError("Posting new support message failed", 500);
+    const error = new HttpError(
+      "Inserting SupportMessage's Id Related Collection was failed",
+      500
+    );
     return next(error);
   }
 
-  res.json({ supportMessage });
+  res
+    .status(201)
+    .json({ message: "Post Support Message complete!", supportMessage });
 };
 
 exports.deleteSupportMessage = async (req, res, next) => {
@@ -142,7 +195,10 @@ exports.deleteSupportMessage = async (req, res, next) => {
       .populate("indieId");
     console.log(userSupportMessage);
   } catch (err) {
-    const error = new HttpError("find Support Message failed,", 500);
+    const error = new HttpError(
+      "Finding Support Message by Support Message Id was failed,",
+      500
+    );
     return next(error);
   }
 
@@ -150,8 +206,6 @@ exports.deleteSupportMessage = async (req, res, next) => {
     const error = new HttpError("Could not find Support Message", 404);
     return next(error);
   }
-
-  //console.log(userSupportMessage);
 
   try {
     const sess = await mongoose.startSession();
@@ -163,11 +217,16 @@ exports.deleteSupportMessage = async (req, res, next) => {
     await userSupportMessage.indieId.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
-    const error = new HttpError("deleting user's support part failed", 500);
+    const error = new HttpError(
+      "Deleting User and Indie collection's Support Message Id was failed",
+      500
+    );
     return next(error);
   }
 
-  res.json({ userSupportMessage });
+  res
+    .status(200)
+    .json({ message: "Delete Support Message Complete!", userSupportMessage });
 };
 
 exports.putIndieLike = async (req, res, next) => {
@@ -178,7 +237,18 @@ exports.putIndieLike = async (req, res, next) => {
   try {
     indie = await Indie.findOne({ name: indieName });
   } catch (err) {
-    const error = new HttpError("getSearchedIndie failed.", 500);
+    const error = new HttpError(
+      "Finding a Indie by indieName was failed.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!indie) {
+    const error = new HttpError(
+      "A Indie with this indieName could not be found.",
+      404
+    );
     return next(error);
   }
 
@@ -186,16 +256,23 @@ exports.putIndieLike = async (req, res, next) => {
   try {
     user = await User.findById(userId);
   } catch (err) {
-    const error = new HttpError("find User by Id is failed", 404);
+    const error = new HttpError("Finding a User by Id was failed", 500);
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError("A User with this id could not be found.", 404);
     return next(error);
   }
 
   let like;
   try {
     like = await user.like.filter((p) => p.toString() === indie._id.toString());
-    console.log(like);
   } catch (err) {
-    const error = new HttpError("Contact Message Submit failed.", 500);
+    const error = new HttpError(
+      "Filtering a User's Id in this Indie's like collection.",
+      500
+    );
     return next(error);
   }
 
@@ -206,7 +283,10 @@ exports.putIndieLike = async (req, res, next) => {
       await user.save();
       await indie.save();
     } catch (err) {
-      const error = new HttpError("pull like failed", 500);
+      const error = new HttpError(
+        "Saving a User and Indie's like collection status was failed (Pulling a like)",
+        500
+      );
       return next(error);
     }
   } else {
@@ -216,11 +296,13 @@ exports.putIndieLike = async (req, res, next) => {
       await user.save();
       await indie.save();
     } catch (err) {
-      const error = new HttpError("push like failed", 500);
+      const error = new HttpError(
+        "Saving a User and Indie's like collection status was failed (Pushing a like)",
+        500
+      );
       return next(error);
     }
   }
 
-  res.json({ message: "put like complete!", like });
-  //res.redirect(`indie/${indieName}/`);
+  res.status(201).json({ message: "Put a like complete!", like });
 };

@@ -1,5 +1,4 @@
 const Indie = require("../models/indie");
-const User = require("../models/user");
 
 const HttpError = require("../models/http-error");
 
@@ -17,11 +16,13 @@ exports.postIndie = async (req, res, next) => {
   try {
     await newIndie.save();
   } catch (err) {
-    const error = new HttpError("Error, Couldn't create new Indie", 500);
+    const error = new HttpError("Posting a new Indie was failed", 500);
     return next(error);
   }
 
-  res.status(201).json({ indie: newIndie });
+  res
+    .status(201)
+    .json({ message: "Post a new Indie complete!", indie: newIndie });
 };
 
 exports.getIndieInfo = async (req, res, next) => {
@@ -32,11 +33,20 @@ exports.getIndieInfo = async (req, res, next) => {
     willBeEditedIndie = await Indie.findOne({ name: indieName });
   } catch (err) {
     const error = new HttpError(
-      "Error, Couldn't bring the Indie Information",
+      "Finding a Indie by this indieName was failed",
       500
     );
     return next(error);
   }
+
+  if (!willBeEditedIndie) {
+    const error = new HttpError(
+      "A Indie with this indieName could not be found.",
+      404
+    );
+    return next(error);
+  }
+
   res.status(200).json({ indie: willBeEditedIndie });
 };
 
@@ -48,8 +58,16 @@ exports.editIndie = async (req, res, next) => {
     willBeEditedIndie = await Indie.findOne({ name: params });
   } catch (err) {
     const error = new HttpError(
-      "Error, Couldn't bring the Indie Information",
+      "Finding a Indie by this indieName was failed",
       500
+    );
+    return next(error);
+  }
+
+  if (!willBeEditedIndie) {
+    const error = new HttpError(
+      "A Indie with this indieName could not be found.",
+      404
     );
     return next(error);
   }
@@ -64,13 +82,13 @@ exports.editIndie = async (req, res, next) => {
     await willBeEditedIndie.save();
   } catch (err) {
     const error = new HttpError(
-      "Error, Couldn't save the Edited Indie Information",
+      "Saving the Edited Indie Information was failed",
       500
     );
     return next(error);
   }
 
-  res.status(200).json({ indie: willBeEditedIndie });
+  res.status(201).json({ indie: willBeEditedIndie });
 };
 
 exports.deleteIndie = async (req, res, next) => {
@@ -79,9 +97,12 @@ exports.deleteIndie = async (req, res, next) => {
   try {
     await Indie.deleteOne({ name: indieName });
   } catch (err) {
-    const error = new HttpError("Error, Couldn't delete the indie", 500);
+    const error = new HttpError(
+      "Deleting a indie with this indieName was failed",
+      500
+    );
     return next(error);
   }
 
-  res.status(200).json({ message: "delete completed!" });
+  res.status(204).json({ message: "delete completed!" });
 };

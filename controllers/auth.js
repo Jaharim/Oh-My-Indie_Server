@@ -34,7 +34,7 @@ exports.signup = async (req, res, next) => {
   try {
     await user.save();
   } catch (err) {
-    const error = new HttpError("Error.", 500);
+    const error = new HttpError("Couldn't save the signed up User.", 500);
     return next(error);
   }
 
@@ -50,12 +50,14 @@ exports.login = async (req, res, next) => {
   try {
     user = await User.findOne({ email: email });
     if (!user) {
-      const error = new Error("A user with this email could not be found.");
-      error.statusCode = 401;
-      throw error;
+      const error = new HttpError(
+        "A user with this email could not be found.",
+        401
+      );
+      return next(error);
     }
   } catch (err) {
-    const error = new HttpError("Error.", 500);
+    const error = new HttpError("Couldn't find the User.", 500);
     return next(error);
   }
 
@@ -64,7 +66,7 @@ exports.login = async (req, res, next) => {
   try {
     passwordCheck = await bcrypt.compare(password, user.password);
   } catch (err) {
-    const error = new HttpError("passwordCheck Error.", 500);
+    const error = new HttpError("Password Checking Error.", 500);
     return next(error);
   }
 
@@ -79,7 +81,7 @@ exports.login = async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
-    const error = new HttpError("passwordCheck Error.", 500);
+    const error = new HttpError("Getting token from jwt was failed.", 500);
     return next(error);
   }
 
