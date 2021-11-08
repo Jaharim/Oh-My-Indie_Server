@@ -14,12 +14,32 @@ const indieSchema = new Schema({
     type: String,
     required: true,
   },
-  description: {
-    type: Object,
+  company: {
+    type: String,
     required: true,
   },
-  sns: {
-    type: Object,
+  song: {
+    type: String,
+    required: true,
+  },
+  birth: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  soundcloud: {
+    type: String,
+    required: true,
+  },
+  instagram: {
+    type: String,
+    required: true,
+  },
+  youtube: {
+    type: String,
     required: true,
   },
   like: [

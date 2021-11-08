@@ -3,15 +3,31 @@ const Indie = require("../models/indie");
 const HttpError = require("../models/http-error");
 
 exports.postIndie = async (req, res, next) => {
-  const { numberString, name, imageUrl, description, sns } = req.body;
+  const {
+    numberString,
+    name,
+    imageUrl,
+    company,
+    song,
+    birth,
+    description,
+    soundcloud,
+    instagram,
+    youtube,
+  } = req.body;
 
   const number = Number(numberString);
   const newIndie = new Indie({
     number,
     name,
     imageUrl,
+    company,
+    song,
+    birth,
     description,
-    sns,
+    soundcloud,
+    instagram,
+    youtube,
   });
 
   try {
