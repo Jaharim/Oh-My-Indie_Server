@@ -48,6 +48,7 @@ exports.getSearchedIndie = async (req, res, next) => {
 
   res.status(200).json({
     message: "Get Searched Indie's information complete!",
+    number: indie.number,
     name: indie.name,
     imageUrl: indie.imageUrl,
     company: indie.company,

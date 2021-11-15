@@ -89,11 +89,31 @@ exports.editIndie = async (req, res, next) => {
     return next(error);
   }
 
-  const { name, imageUrl, description, sns } = req.body;
+  const {
+    numberString,
+    name,
+    imageUrl,
+    company,
+    song,
+    birth,
+    description,
+    soundcloud,
+    instagram,
+    youtube,
+  } = req.body;
+
+  const number = Number(numberString);
+
+  willBeEditedIndie.number = number;
   willBeEditedIndie.name = name;
   willBeEditedIndie.imageUrl = imageUrl;
+  willBeEditedIndie.company = company;
+  willBeEditedIndie.song = song;
+  willBeEditedIndie.birth = birth;
   willBeEditedIndie.description = description;
-  willBeEditedIndie.sns = sns;
+  willBeEditedIndie.soundcloud = soundcloud;
+  willBeEditedIndie.instagram = instagram;
+  willBeEditedIndie.youtube = youtube;
 
   try {
     await willBeEditedIndie.save();
