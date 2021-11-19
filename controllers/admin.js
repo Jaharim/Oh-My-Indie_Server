@@ -1,8 +1,10 @@
 const Indie = require("../models/indie");
+const fileUpload = require("../middleware/file-upload");
 
 const HttpError = require("../models/http-error");
 
 exports.postIndie = async (req, res, next) => {
+  console.log(req.file);
   const {
     numberString,
     name,
@@ -36,9 +38,7 @@ exports.postIndie = async (req, res, next) => {
     return next(error);
   }
 
-  res
-    .status(201)
-    .json({ message: "Post a new Indie complete!", indie: newIndie });
+  res.status(201).json({ message: "Post a new Indie complete!" });
 };
 
 exports.getIndieInfo = async (req, res, next) => {

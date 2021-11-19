@@ -50,7 +50,7 @@ exports.getSearchedIndie = async (req, res, next) => {
     message: "Get Searched Indie's information complete!",
     number: indie.number,
     name: indie.name,
-    imageUrl: indie.imageUrl,
+    image: indie.image,
     company: indie.company,
     song: indie.song,
     birth: indie.birth,
