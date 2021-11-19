@@ -6,7 +6,6 @@ exports.postIndie = async (req, res, next) => {
   const {
     numberString,
     name,
-    imageUrl,
     company,
     song,
     birth,
@@ -20,7 +19,7 @@ exports.postIndie = async (req, res, next) => {
   const newIndie = new Indie({
     number,
     name,
-    imageUrl,
+    image: req.file.path,
     company,
     song,
     birth,

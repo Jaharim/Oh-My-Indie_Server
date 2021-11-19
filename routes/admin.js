@@ -6,10 +6,11 @@ const User = require("../models/user");
 const adminController = require("../controllers/admin");
 
 const authMw = require("../middleware/auth-mw");
+const fileUpload = require("../middleware/file-upload");
 
 const router = express.Router();
 
-router.post("/addIndie", adminController.postIndie);
+router.post("/addIndie", fileUpload.single("image"), adminController.postIndie);
 
 router.get("/:indieName/editIndie", adminController.getIndieInfo);
 

@@ -10,7 +10,7 @@ const indieSchema = new Schema({
     type: String,
     required: true,
   },
-  imageUrl: {
+  image: {
     type: String,
     required: true,
   },

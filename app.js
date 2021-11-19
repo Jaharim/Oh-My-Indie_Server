@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+
 const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -25,6 +28,9 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 app.use(express.json());
+
+app.use("/uploads/images", express.static(path.join("uploads", "images")));
+
 app.use("/admin", adminRoutes);
 app.use("/indie", indieRoutes);
 app.use("/auth", authRoutes);
@@ -32,6 +38,11 @@ app.use("/contact", contactRoutes);
 
 app.use((error, req, res, next) => {
   console.log(error);
+  if (req.file) {
+    fs.unlink(req.file.path, (err) => {
+      console.log(err);
+    });
+  }
   const status = error.statusCode || 500;
   const message = error.message;
   const data = error.data;
