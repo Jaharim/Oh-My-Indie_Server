@@ -14,7 +14,11 @@ router.post("/addIndie", fileUpload.single("image"), adminController.postIndie);
 
 router.get("/:indieName/editIndie", adminController.getIndieInfo);
 
-router.patch("/:indieName/editIndie", adminController.editIndie);
+router.patch(
+  "/:indieName/editIndie",
+  fileUpload.single("image"),
+  adminController.editIndie
+);
 
 router.delete("/:indieName/deleteIndie", adminController.deleteIndie);
 

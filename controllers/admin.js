@@ -1,5 +1,6 @@
 const Indie = require("../models/indie");
 const fileUpload = require("../middleware/file-upload");
+const fs = require("fs");
 
 const HttpError = require("../models/http-error");
 
@@ -88,10 +89,11 @@ exports.editIndie = async (req, res, next) => {
     return next(error);
   }
 
+  const imagePath = willBeEditedIndie.image;
+
   const {
     numberString,
     name,
-    imageUrl,
     company,
     song,
     birth,
@@ -105,7 +107,7 @@ exports.editIndie = async (req, res, next) => {
 
   willBeEditedIndie.number = number;
   willBeEditedIndie.name = name;
-  willBeEditedIndie.imageUrl = imageUrl;
+  willBeEditedIndie.image = req.file.path;
   willBeEditedIndie.company = company;
   willBeEditedIndie.song = song;
   willBeEditedIndie.birth = birth;
@@ -124,11 +126,30 @@ exports.editIndie = async (req, res, next) => {
     return next(error);
   }
 
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
+
   res.status(201).json({ indie: willBeEditedIndie });
 };
 
 exports.deleteIndie = async (req, res, next) => {
   const indieName = req.params.indieName;
+
+  let indieForDeleteImg;
+  try {
+    indieForDeleteImg = await Indie.findOne({ name: indieName });
+  } catch (err) {
+    const error = new HttpError(
+      "Finding Indie For Deleting Image was failed",
+      500
+    );
+    return next(error);
+  }
+
+  fs.unlink(indieForDeleteImg.image, (err) => {
+    console.log(err);
+  });
 
   try {
     await Indie.deleteOne({ name: indieName });

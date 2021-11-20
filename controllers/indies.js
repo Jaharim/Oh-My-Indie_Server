@@ -71,16 +71,16 @@ exports.getRandomIndie = async (req, res, next) => {
     return next(error);
   }
 
-  const randomIndieNumber = Math.floor(Math.random() * indieCount) + 1;
+  const randomIndieNumber = Math.floor(Math.random() * indieCount);
 
   let randomIndie;
   try {
-    randomIndie = await Indie.find({ number: randomIndieNumber });
+    randomIndie = await Indie.find().skip(randomIndieNumber).limit(1);
   } catch (err) {
     const error = new HttpError("Bringing Random Indie failed.", 500);
     return next(error);
   }
-
+  console.log(randomIndie);
   if (!randomIndie) {
     const error = new HttpError(
       "A Random Indie with this random indieNumber could not be found.",
@@ -94,7 +94,7 @@ exports.getRandomIndie = async (req, res, next) => {
   res.status(200).json({
     message: "Get Randome Indie's information complete!",
     name: randomIndie[0].name,
-    imageUrl: randomIndie[0].imageUrl,
+    image: randomIndie[0].image,
     like: likeNumber,
   });
 };
