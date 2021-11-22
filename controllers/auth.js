@@ -38,7 +38,27 @@ exports.signup = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(201).json({ message: "User created!", userId: user._id });
+  let token;
+  try {
+    token = await jwt.sign(
+      {
+        email: user.email,
+        userId: user.id,
+      },
+      `${db.jwt_key}`,
+      { expiresIn: "1h" }
+    );
+  } catch (err) {
+    const error = new HttpError("Getting token from jwt was failed.", 500);
+    return next(error);
+  }
+
+  res.status(201).json({
+    message: "User created!",
+    userId: user.id,
+    token: token,
+    email: user.email,
+  });
 };
 
 exports.login = async (req, res, next) => {
@@ -49,24 +69,33 @@ exports.login = async (req, res, next) => {
   let user;
   try {
     user = await User.findOne({ email: email });
-    if (!user) {
-      const error = new HttpError(
-        "A user with this email could not be found.",
-        401
-      );
-      return next(error);
-    }
   } catch (err) {
     const error = new HttpError("Couldn't find the User.", 500);
     return next(error);
   }
 
+  if (!user) {
+    const error = new HttpError(
+      "A user with this email could not be found.",
+      401
+    );
+    return next(error);
+  }
+
   loadedUser = user;
-  let passwordCheck;
+  let passwordCheck = false;
   try {
     passwordCheck = await bcrypt.compare(password, user.password);
   } catch (err) {
     const error = new HttpError("Password Checking Error.", 500);
+    return next(error);
+  }
+
+  if (!passwordCheck) {
+    const error = new HttpError(
+      "Invalid credentials, could not log you in",
+      401
+    );
     return next(error);
   }
 
@@ -75,7 +104,7 @@ exports.login = async (req, res, next) => {
     token = await jwt.sign(
       {
         email: loadedUser.email,
-        userId: loadedUser._id.toString(),
+        userId: loadedUser.id,
       },
       `${db.jwt_key}`,
       { expiresIn: "1h" }
@@ -85,5 +114,7 @@ exports.login = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ token: token, userId: loadedUser._id.toString() });
+  res
+    .status(200)
+    .json({ token: token, userId: loadedUser.id, email: loadedUser.email });
 };

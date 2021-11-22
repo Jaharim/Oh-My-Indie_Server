@@ -5,10 +5,12 @@ const User = require("../models/user");
 
 const adminController = require("../controllers/admin");
 
-const authMw = require("../middleware/auth-mw");
+const checkAuth = require("../middleware/auth-mw");
 const fileUpload = require("../middleware/file-upload");
 
 const router = express.Router();
+
+router.use(checkAuth);
 
 router.post("/addIndie", fileUpload.single("image"), adminController.postIndie);
 

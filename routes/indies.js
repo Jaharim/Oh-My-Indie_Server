@@ -11,7 +11,7 @@ const router = express.Router();
  */
 const Indie = require("../models/indie");
 const indieController = require("../controllers/indies");
-const authMw = require("../middleware/auth-mw");
+const checkAuth = require("../middleware/auth-mw");
 
 const router = express.Router();
 
@@ -20,6 +20,8 @@ router.get("/", indieController.getRandomIndie);
 router.get("/:indieName", indieController.getSearchedIndie);
 
 router.get("/:indieName/support", indieController.getSupportMessage);
+
+router.use(checkAuth);
 
 router.put("/:indieName/like", indieController.putIndieLike);
 

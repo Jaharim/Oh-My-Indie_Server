@@ -10,7 +10,15 @@ const contactSchema = new Schema({
     type: String,
     required: true,
   },
-  user: {
+  nickname: {
+    type: String,
+    required: true,
+  },
+  createdDate: {
+    type: Date,
+    required: true,
+  },
+  creator: {
     type: mongoose.Types.ObjectId,
     ref: "User",
     required: true,

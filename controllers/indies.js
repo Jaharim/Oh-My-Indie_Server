@@ -136,7 +136,7 @@ exports.getSupportMessage = async (req, res, next) => {
 };
 
 exports.postSupportMessage = async (req, res, next) => {
-  const { title, message, creator } = req.body;
+  const { title, message } = req.body;
   const indieName = req.params.indieName;
 
   let indie;
@@ -158,7 +158,7 @@ exports.postSupportMessage = async (req, res, next) => {
   let user;
 
   try {
-    user = await User.findById(creator);
+    user = await User.findById(req.userData.userId);
   } catch (err) {
     const error = new HttpError(
       "Finding a user by creator Id was failed,",
@@ -183,7 +183,7 @@ exports.postSupportMessage = async (req, res, next) => {
     title,
     message,
     nickname,
-    creator,
+    creator: req.userData.userId,
     indieId,
   });
 

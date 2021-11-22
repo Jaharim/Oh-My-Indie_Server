@@ -89,8 +89,6 @@ exports.editIndie = async (req, res, next) => {
     return next(error);
   }
 
-  const imagePath = willBeEditedIndie.image;
-
   const {
     numberString,
     name,
@@ -101,13 +99,24 @@ exports.editIndie = async (req, res, next) => {
     soundcloud,
     instagram,
     youtube,
+    checkEditImg,
   } = req.body;
 
   const number = Number(numberString);
 
+  let imagePath = willBeEditedIndie.image;
+  if (checkEditImg === "true") {
+    fs.unlink(imagePath, (err) => {
+      console.log(err);
+    });
+    imagePath = req.file.path;
+  }
+
+  console.log(imagePath);
+
   willBeEditedIndie.number = number;
   willBeEditedIndie.name = name;
-  willBeEditedIndie.image = req.file.path;
+  willBeEditedIndie.image = imagePath;
   willBeEditedIndie.company = company;
   willBeEditedIndie.song = song;
   willBeEditedIndie.birth = birth;
@@ -125,10 +134,10 @@ exports.editIndie = async (req, res, next) => {
     );
     return next(error);
   }
-
+  /* 
   fs.unlink(imagePath, (err) => {
     console.log(err);
-  });
+  });  */
 
   res.status(201).json({ indie: willBeEditedIndie });
 };

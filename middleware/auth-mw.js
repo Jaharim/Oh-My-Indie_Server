@@ -1,26 +1,23 @@
 const jwt = require("jsonwebtoken");
 const db = require("../config/keys");
+const HttpError = require("../models/http-error");
 
 module.exports = (req, res, next) => {
-  const authHeader = req.get("Authorization");
-  if (!authHeader) {
-    const error = new Error("Not authenticated.");
-    error.statusCode = 401;
-    throw error;
+  if (req.method === "OPTIONS") {
+    return next();
   }
-  const token = authHeader.split(" ")[1];
-  let decodedToken;
   try {
-    decodedToken = jwt.verify(token, `${db.jwt_key}`);
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      throw new Error("Authentication failed!");
+    }
+    const decodedToken = jwt.verify(token, `${db.jwt_key}`);
+    req.userData = {
+      userId: decodedToken.userId,
+    };
+    next();
   } catch (err) {
-    err.statusCode = 500;
-    throw err;
+    const error = new HttpError("Authentication failed!", 401);
+    return next(error);
   }
-  if (!decodedToken) {
-    const error = new Error("Not authenticated.");
-    error.statusCode = 401;
-    throw error;
-  }
-  req.userId = decodedToken.userId;
-  next();
 };
