@@ -102,10 +102,27 @@ exports.getRandomIndie = async (req, res, next) => {
 exports.getSupportMessage = async (req, res, next) => {
   const indieName = req.params.indieName;
 
+  let indie;
+  try {
+    indie = await Indie.findOne({ name: indieName });
+  } catch (err) {
+    const error = new HttpError(
+      "Finding a Indie by this indie name was failed",
+      500
+    );
+    return next(error);
+  }
+  if (!indie) {
+    const error = new HttpError("This indie could not be found.", 404);
+    return next(error);
+  }
+  const indieId = indie._id;
+  console.log(indie._id);
+
   let supportMessage;
   try {
     supportMessage = await Support.find({
-      indieName: indieName,
+      indieId: indie._id,
     });
   } catch (err) {
     const error = new HttpError(
@@ -114,6 +131,8 @@ exports.getSupportMessage = async (req, res, next) => {
     );
     return next(error);
   }
+
+  console.log(supportMessage);
 
   if (!supportMessage) {
     const error = new HttpError(
@@ -129,6 +148,8 @@ exports.getSupportMessage = async (req, res, next) => {
     let creator = el.nickname;
     supportMessageJson.push({ title, body, creator });
   });
+
+  console.log(supportMessageJson);
 
   res
     .status(200)
@@ -175,24 +196,37 @@ exports.postSupportMessage = async (req, res, next) => {
     return next(error);
   }
 
-  indieId = indie._id.toString();
-
+  indieId = indie._id;
+  console.log(indieId);
+  const userId = mongoose.Types.ObjectId(req.userData.userId);
+  console.log(userId);
   const nickname = user.nickname;
 
   const supportMessage = new Support({
     title,
     message,
     nickname,
-    creator: req.userData.userId,
+    creator: userId,
+    createdDate: new Date(new Date().getTime()),
     indieId,
   });
+
+  /*  try {
+    await supportMessage.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Inserting SupportMessage's Id Related Collection was failed",
+      500
+    );
+    return next(error);
+  } */
 
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await supportMessage.save({ session: sess });
-    user.supports.push(supportMessage);
-    indie.supports.push(supportMessage);
+    user.supports.push(supportMessage._id);
+    indie.supports.push(supportMessage._id);
     await user.save({ session: sess });
     await indie.save({ session: sess });
     await sess.commitTransaction();

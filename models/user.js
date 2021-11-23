@@ -27,7 +27,7 @@ const userSchema = new Schema({
   supports: [
     {
       type: mongoose.Types.ObjectId,
-      ref: "Post",
+      ref: "Support",
     },
   ],
 });

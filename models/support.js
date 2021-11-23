@@ -19,6 +19,10 @@ const supportSchema = new Schema({
     ref: "User",
     required: true,
   },
+  createdDate: {
+    type: Date,
+    required: true,
+  },
   indieId: {
     type: mongoose.Types.ObjectId,
     ref: "Indie",
