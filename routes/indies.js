@@ -34,6 +34,8 @@ router.post(
   indieController.postSupportMessage
 );
 
+router.patch("/:indieName/support", indieController.editSupportMessage);
+
 router.delete(
   "/:indieName/support/:supportMessageId",
   indieController.deleteSupportMessage

@@ -132,8 +132,6 @@ exports.getSupportMessage = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(supportMessage);
-
   if (!supportMessage) {
     const error = new HttpError(
       "This indie's Support Messages could not be found.",
@@ -146,7 +144,8 @@ exports.getSupportMessage = async (req, res, next) => {
     let title = el.title;
     let body = el.message;
     let creator = el.nickname;
-    supportMessageJson.push({ title, body, creator });
+    let id = el._id.toString();
+    supportMessageJson.push({ title, body, creator, id });
   });
 
   console.log(supportMessageJson);
@@ -244,6 +243,47 @@ exports.postSupportMessage = async (req, res, next) => {
     message: supportMessage.message,
     creator: user.nickname,
   });
+};
+
+exports.editSupportMessage = async (req, res, next) => {
+  const { title, body, id } = req.body;
+
+  let willBeEditedSupportMsg;
+  try {
+    willBeEditedSupportMsg = await Support.findOne({
+      _id: mongoose.Types.ObjectId(id),
+    });
+  } catch (err) {
+    const error = new HttpError(
+      "Finding a SupportMsg by this id was failed",
+      500
+    );
+    return next(error);
+  }
+
+  if (!willBeEditedSupportMsg) {
+    const error = new HttpError(
+      "A SupportMsg with this id could not be found.",
+      404
+    );
+    return next(error);
+  }
+
+  willBeEditedSupportMsg.title = title;
+  willBeEditedSupportMsg.message = body;
+
+  try {
+    await willBeEditedSupportMsg.save();
+  } catch (err) {
+    const error = new HttpError("Saving the Edited SupportMsg was failed", 500);
+    return next(error);
+  }
+  /* 
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });  */
+
+  res.status(201).json({ message: "edit support message complete!" });
 };
 
 exports.deleteSupportMessage = async (req, res, next) => {
