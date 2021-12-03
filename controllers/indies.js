@@ -143,9 +143,10 @@ exports.getSupportMessage = async (req, res, next) => {
   const toFront = supportMessage.forEach((el) => {
     let title = el.title;
     let body = el.message;
-    let creator = el.nickname;
+    let nickname = el.nickname;
+    let creator = el.creator.toString();
     let id = el._id.toString();
-    supportMessageJson.push({ title, body, creator, id });
+    supportMessageJson.push({ title, body, nickname, creator, id });
   });
 
   console.log(supportMessageJson);
@@ -261,6 +262,10 @@ exports.editSupportMessage = async (req, res, next) => {
     return next(error);
   }
 
+  if (willBeEditedSupportMsg.creator.toString() !== req.userData.userId) {
+    const error = new HttpError("You don't have a authentication.", 404);
+    return next(error);
+  }
   if (!willBeEditedSupportMsg) {
     const error = new HttpError(
       "A SupportMsg with this id could not be found.",
@@ -287,14 +292,14 @@ exports.editSupportMessage = async (req, res, next) => {
 };
 
 exports.deleteSupportMessage = async (req, res, next) => {
-  const supportMessageId = req.params.supportMessageId;
+  const { id } = req.body;
 
-  let userSupportMessage;
+  let supportMessage;
   try {
-    userSupportMessage = await Support.findById(supportMessageId)
+    supportMessage = await Support.findById(id)
       .populate("creator")
       .populate("indieId");
-    console.log(userSupportMessage);
+    console.log(supportMessage);
   } catch (err) {
     const error = new HttpError(
       "Finding Support Message by Support Message Id was failed,",
@@ -303,7 +308,12 @@ exports.deleteSupportMessage = async (req, res, next) => {
     return next(error);
   }
 
-  if (!userSupportMessage) {
+  if (supportMessage.creator.toString() !== req.userData.userId) {
+    const error = new HttpError("You don't have a authentication.", 404);
+    return next(error);
+  }
+
+  if (!supportMessage) {
     const error = new HttpError("Could not find Support Message", 404);
     return next(error);
   }
@@ -311,11 +321,11 @@ exports.deleteSupportMessage = async (req, res, next) => {
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    await userSupportMessage.deleteOne({ session: sess });
-    userSupportMessage.creator.supports.pull(userSupportMessage);
-    userSupportMessage.indieId.supports.pull(userSupportMessage);
-    await userSupportMessage.creator.save({ session: sess });
-    await userSupportMessage.indieId.save({ session: sess });
+    await supportMessage.deleteOne({ session: sess });
+    supportMessage.creator.supports.pull(supportMessage);
+    supportMessage.indieId.supports.pull(supportMessage);
+    await supportMessage.creator.save({ session: sess });
+    await supportMessage.indieId.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
@@ -327,7 +337,7 @@ exports.deleteSupportMessage = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ message: "Delete Support Message Complete!", userSupportMessage });
+    .json({ message: "Delete Support Message Complete!", supportMessage });
 };
 
 exports.putIndieLike = async (req, res, next) => {

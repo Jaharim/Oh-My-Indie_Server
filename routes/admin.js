@@ -12,6 +12,8 @@ const router = express.Router();
 
 router.use(checkAuth);
 
+router.get("/contact", adminController.getContactMessage);
+
 router.post("/addIndie", fileUpload.single("image"), adminController.postIndie);
 
 router.get("/:indieName/editIndie", adminController.getIndieInfo);

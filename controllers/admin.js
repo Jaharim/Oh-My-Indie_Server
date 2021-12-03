@@ -3,6 +3,7 @@ const fileUpload = require("../middleware/file-upload");
 const fs = require("fs");
 
 const HttpError = require("../models/http-error");
+const Contact = require("../models/contact");
 
 exports.postIndie = async (req, res, next) => {
   console.log(req.file);
@@ -171,4 +172,33 @@ exports.deleteIndie = async (req, res, next) => {
   }
 
   res.status(204).json({ message: "delete completed!" });
+};
+
+exports.getContactMessage = async (req, res, next) => {
+  let contactMessages;
+  try {
+    contactMessages = await Contact.find();
+  } catch (err) {
+    const error = new HttpError("Finding a Contact message was failed", 500);
+    return next(error);
+  }
+  if (!contactMessages) {
+    const error = new HttpError("This indie could not be found.", 404);
+    return next(error);
+  }
+
+  const contactMessageJson = [];
+  const toFront = contactMessages.forEach((el) => {
+    let title = el.title;
+    let content = el.content;
+    let nickname = el.nickname;
+    let createdDate = el.createdDate.toISOString();
+    contactMessageJson.push({ title, content, nickname, createdDate });
+  });
+
+  console.log(contactMessageJson);
+
+  res
+    .status(200)
+    .json({ message: "Get Support Message complete!", contactMessageJson });
 };
