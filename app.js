@@ -10,6 +10,7 @@ const adminRoutes = require("./routes/admin");
 const indieRoutes = require("./routes/indies");
 const authRoutes = require("./routes/auth");
 const contactRoutes = require("./routes/contact");
+const mypageRoutes = require("./routes/mypage");
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/admin", adminRoutes);
 app.use("/indie", indieRoutes);
 app.use("/auth", authRoutes);
 app.use("/contact", contactRoutes);
+app.use("/mypage", mypageRoutes);
 
 app.use((error, req, res, next) => {
   console.log(error);
