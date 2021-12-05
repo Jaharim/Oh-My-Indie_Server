@@ -7,11 +7,10 @@ const mongoose = require("mongoose");
 
 exports.getMySupportMessage = async (req, res, next) => {
   const userId = mongoose.Types.ObjectId(req.userData.userId);
-  console.log(userId);
+
   let mySupportMessage;
   try {
     mySupportMessage = await Support.find({ creator: userId });
-    console.log(mySupportMessage);
   } catch (err) {
     const error = new HttpError("Finding a my support message was failed", 500);
     return next(error);
@@ -20,22 +19,59 @@ exports.getMySupportMessage = async (req, res, next) => {
     const error = new HttpError("This indie could not be found.", 404);
     return next(error);
   }
+  let indie;
+  let indieNames = [];
 
   const mySupportMessageJson = [];
-  const toFront = mySupportMessage.forEach((el) => {
+
+  await Promise.all(
+    mySupportMessage.map(async (el) => {
+      try {
+        indie = await Indie.findOne({ _id: el.indieId });
+      } catch (err) {
+        const error = new HttpError("Finding a indieName was failed", 500);
+        return next(error);
+      }
+      let title = el.title;
+      let body = el.message;
+      let nickname = el.nickname;
+      let creator = el.creator.toString();
+      let id = el._id.toString();
+      let indieName = indie.name;
+      mySupportMessageJson.push({
+        title,
+        body,
+        nickname,
+        creator,
+        id,
+        indieName,
+      });
+    })
+  );
+
+  /*   const toFront = mySupportMessage.forEach(async (el) => {
     let title = el.title;
     let body = el.message;
     let nickname = el.nickname;
     let creator = el.creator.toString();
     let id = el._id.toString();
-    mySupportMessageJson.push({ title, body, nickname, creator, id });
-  });
+
+    mySupportMessageJson.push({
+      title,
+      body,
+      nickname,
+      creator,
+      id,
+    });
+  }); */
 
   console.log(mySupportMessageJson);
 
-  res
-    .status(200)
-    .json({ message: "Get Support Message complete!", mySupportMessageJson });
+  res.status(200).json({
+    message: "Get Support Message complete!",
+    mySupportMessageJson,
+    indieNames,
+  });
 };
 
 exports.getMyContactMessage = async (req, res, next) => {
