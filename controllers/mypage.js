@@ -1,6 +1,7 @@
 const Indie = require("../models/indie");
 const User = require("../models/user");
 const Support = require("../models/support");
+const Contact = require("../models/contact");
 
 const HttpError = require("../models/http-error");
 const mongoose = require("mongoose");
@@ -75,9 +76,10 @@ exports.getMySupportMessage = async (req, res, next) => {
 };
 
 exports.getMyContactMessage = async (req, res, next) => {
+  const userId = mongoose.Types.ObjectId(req.userData.userId);
   let contactMessages;
   try {
-    contactMessages = await Contact.find();
+    contactMessages = await Contact.find({ creator: userId });
   } catch (err) {
     const error = new HttpError("Finding a Contact message was failed", 500);
     return next(error);
@@ -87,18 +89,18 @@ exports.getMyContactMessage = async (req, res, next) => {
     return next(error);
   }
 
-  const contactMessageJson = [];
+  const myContactMessageJson = [];
   const toFront = contactMessages.forEach((el) => {
     let title = el.title;
     let content = el.content;
     let nickname = el.nickname;
     let createdDate = el.createdDate.toISOString();
-    contactMessageJson.push({ title, content, nickname, createdDate });
+    myContactMessageJson.push({ title, content, nickname, createdDate });
   });
 
-  console.log(contactMessageJson);
+  console.log(myContactMessageJson);
 
   res
     .status(200)
-    .json({ message: "Get Support Message complete!", contactMessageJson });
+    .json({ message: "Get Support Message complete!", myContactMessageJson });
 };

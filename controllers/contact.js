@@ -13,9 +13,10 @@ exports.submitContactMessage = async (req, res, next) => {
   }
   const { title, content } = req.body;
 
+  let userId = mongoose.Types.ObjectId(req.userData.userId);
   let user;
   try {
-    user = await User.findOne({ userId: req.userData.userId });
+    user = await User.findById({ _id: userId });
   } catch (err) {
     const error = new HttpError("Finding User Data was failed.", 500);
     return next(error);
