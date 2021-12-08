@@ -20,8 +20,8 @@ exports.getMySupportMessage = async (req, res, next) => {
     const error = new HttpError("This indie could not be found.", 404);
     return next(error);
   }
+
   let indie;
-  let indieNames = [];
 
   const mySupportMessageJson = [];
 
@@ -50,28 +50,11 @@ exports.getMySupportMessage = async (req, res, next) => {
     })
   );
 
-  /*   const toFront = mySupportMessage.forEach(async (el) => {
-    let title = el.title;
-    let body = el.message;
-    let nickname = el.nickname;
-    let creator = el.creator.toString();
-    let id = el._id.toString();
-
-    mySupportMessageJson.push({
-      title,
-      body,
-      nickname,
-      creator,
-      id,
-    });
-  }); */
-
   console.log(mySupportMessageJson);
 
   res.status(200).json({
     message: "Get Support Message complete!",
     mySupportMessageJson,
-    indieNames,
   });
 };
 
@@ -95,7 +78,14 @@ exports.getMyContactMessage = async (req, res, next) => {
     let content = el.content;
     let nickname = el.nickname;
     let createdDate = el.createdDate.toISOString();
-    myContactMessageJson.push({ title, content, nickname, createdDate });
+    let replyStatus = el.reply;
+    myContactMessageJson.push({
+      title,
+      content,
+      nickname,
+      createdDate,
+      replyStatus,
+    });
   });
 
   console.log(myContactMessageJson);

@@ -1,6 +1,8 @@
 const Indie = require("../models/indie");
+const Support = require("../models/support");
 const fileUpload = require("../middleware/file-upload");
 const fs = require("fs");
+const mongoose = require("mongoose");
 
 const HttpError = require("../models/http-error");
 const Contact = require("../models/contact");
@@ -193,7 +195,8 @@ exports.getContactMessage = async (req, res, next) => {
     let content = el.content;
     let nickname = el.nickname;
     let createdDate = el.createdDate.toISOString();
-    contactMessageJson.push({ title, content, nickname, createdDate });
+    let id = el._id;
+    contactMessageJson.push({ title, content, nickname, createdDate, id });
   });
 
   console.log(contactMessageJson);
@@ -201,4 +204,67 @@ exports.getContactMessage = async (req, res, next) => {
   res
     .status(200)
     .json({ message: "Get Support Message complete!", contactMessageJson });
+};
+
+exports.deleteContactMessage = async (req, res, next) => {
+  const { id } = req.body;
+  const contactId = mongoose.Types.ObjectId(id);
+  let contactMessages;
+  try {
+    contactMessages = await Contact.deleteOne({ _id: contactId });
+  } catch (err) {
+    const error = new HttpError("Deleting a Contact message was failed", 500);
+    return next(error);
+  }
+
+  res.status(200).json({ message: "Delete Contact Message complete!" });
+};
+
+exports.getSupportMessage = async (req, res, next) => {
+  let supportMessages;
+  try {
+    supportMessages = await Support.find();
+  } catch (err) {
+    const error = new HttpError("Finding a support message was failed", 500);
+    return next(error);
+  }
+  if (!supportMessages) {
+    const error = new HttpError("This indie could not be found.", 404);
+    return next(error);
+  }
+
+  let indie;
+
+  const supportMessageJson = [];
+
+  await Promise.all(
+    supportMessages.map(async (el) => {
+      try {
+        indie = await Indie.findOne({ _id: el.indieId });
+      } catch (err) {
+        const error = new HttpError("Finding a indieName was failed", 500);
+        return next(error);
+      }
+      let title = el.title;
+      let body = el.message;
+      let nickname = el.nickname;
+      let creator = el.creator.toString();
+      let id = el._id.toString();
+      let indieName = indie.name;
+      supportMessageJson.push({
+        title,
+        body,
+        nickname,
+        creator,
+        id,
+        indieName,
+      });
+    })
+  );
+
+  console.log(supportMessageJson);
+
+  res
+    .status(200)
+    .json({ message: "Get Support Message complete!", supportMessageJson });
 };

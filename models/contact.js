@@ -23,6 +23,10 @@ const contactSchema = new Schema({
     ref: "User",
     required: true,
   },
+  reply: {
+    type: String,
+    required: false,
+  },
 });
 
 module.exports = mongoose.model("Contact", contactSchema);

@@ -211,16 +211,6 @@ exports.postSupportMessage = async (req, res, next) => {
     indieId,
   });
 
-  /*  try {
-    await supportMessage.save();
-  } catch (err) {
-    const error = new HttpError(
-      "Inserting SupportMessage's Id Related Collection was failed",
-      500
-    );
-    return next(error);
-  } */
-
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -283,10 +273,6 @@ exports.editSupportMessage = async (req, res, next) => {
     const error = new HttpError("Saving the Edited SupportMsg was failed", 500);
     return next(error);
   }
-  /* 
-  fs.unlink(imagePath, (err) => {
-    console.log(err);
-  });  */
 
   res.status(201).json({ message: "edit support message complete!" });
 };

@@ -14,6 +14,10 @@ router.use(checkAuth);
 
 router.get("/contact", adminController.getContactMessage);
 
+router.delete("/contact", adminController.deleteContactMessage);
+
+router.get("/support", adminController.getSupportMessage);
+
 router.post("/addIndie", fileUpload.single("image"), adminController.postIndie);
 
 router.get("/:indieName/editIndie", adminController.getIndieInfo);
