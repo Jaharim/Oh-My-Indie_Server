@@ -206,6 +206,65 @@ exports.getContactMessage = async (req, res, next) => {
     .json({ message: "Get Support Message complete!", contactMessageJson });
 };
 
+exports.replyContactMessage = async (req, res, next) => {
+  const { reply, id } = req.body;
+  const contactId = mongoose.Types.ObjectId(id);
+  let contactMessage;
+  try {
+    contactMessage = await Contact.findOne({ _id: contactId });
+  } catch (err) {
+    const error = new HttpError("Finding a Contact message was failed", 500);
+    return next(error);
+  }
+  if (!contactMessages) {
+    const error = new HttpError("This indie could not be found.", 404);
+    return next(error);
+  }
+
+  contactMessage.reply = reply;
+
+  try {
+    await contactMessage.save();
+  } catch (err) {
+    const error = new HttpError("Saving the reply was failed", 500);
+    return next(error);
+  }
+
+  res.status(200).json({ message: "Reply complete!" });
+};
+
+exports.getCompleteContactMessage = async (req, res, next) => {
+  let contactMessages;
+  try {
+    contactMessages = await Contact.find();
+  } catch (err) {
+    const error = new HttpError("Finding a Contact message was failed", 500);
+    return next(error);
+  }
+  if (!contactMessages) {
+    const error = new HttpError("This indie could not be found.", 404);
+    return next(error);
+  }
+
+  const contactMessageJson = [];
+  const toFront = contactMessages.forEach((el) => {
+    if (el.reply) {
+      let title = el.title;
+      let content = el.content;
+      let nickname = el.nickname;
+      let createdDate = el.createdDate.toISOString();
+      let id = el._id;
+      contactMessageJson.push({ title, content, nickname, createdDate, id });
+    }
+  });
+
+  console.log(contactMessageJson);
+
+  res
+    .status(200)
+    .json({ message: "Get Support Message complete!", contactMessageJson });
+};
+
 exports.deleteContactMessage = async (req, res, next) => {
   const { id } = req.body;
   const contactId = mongoose.Types.ObjectId(id);
