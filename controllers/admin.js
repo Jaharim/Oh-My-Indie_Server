@@ -191,12 +191,14 @@ exports.getContactMessage = async (req, res, next) => {
 
   const contactMessageJson = [];
   const toFront = contactMessages.forEach((el) => {
-    let title = el.title;
-    let content = el.content;
-    let nickname = el.nickname;
-    let createdDate = el.createdDate.toISOString();
-    let id = el._id;
-    contactMessageJson.push({ title, content, nickname, createdDate, id });
+    if (!el.reply) {
+      let title = el.title;
+      let content = el.content;
+      let nickname = el.nickname;
+      let createdDate = el.createdDate.toISOString();
+      let id = el._id;
+      contactMessageJson.push({ title, content, nickname, createdDate, id });
+    }
   });
 
   console.log(contactMessageJson);
@@ -207,7 +209,7 @@ exports.getContactMessage = async (req, res, next) => {
 };
 
 exports.replyContactMessage = async (req, res, next) => {
-  const { reply, id } = req.body;
+  const { content, id } = req.body;
   const contactId = mongoose.Types.ObjectId(id);
   let contactMessage;
   try {
@@ -216,12 +218,12 @@ exports.replyContactMessage = async (req, res, next) => {
     const error = new HttpError("Finding a Contact message was failed", 500);
     return next(error);
   }
-  if (!contactMessages) {
+  if (!contactMessage) {
     const error = new HttpError("This indie could not be found.", 404);
     return next(error);
   }
 
-  contactMessage.reply = reply;
+  contactMessage.reply = content;
 
   try {
     await contactMessage.save();

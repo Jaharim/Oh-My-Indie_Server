@@ -16,9 +16,9 @@ router.get("/contact", adminController.getContactMessage);
 
 router.delete("/contact", adminController.deleteContactMessage);
 
-router.get("/contact/complete", adminController.getCompleteContactMessage);
+router.patch("/contact/reply", adminController.replyContactMessage);
 
-router.patch("/contact/complete", adminController.replyContactMessage);
+router.get("/contact/complete", adminController.getCompleteContactMessage);
 
 router.get("/support", adminController.getSupportMessage);
 
