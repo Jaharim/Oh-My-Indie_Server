@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 exports.getSearchedIndie = async (req, res, next) => {
   const indieName = req.params.indieName;
-  const { userId } = req.body;
+  const userId = mongoose.Types.ObjectId(req.userData.userId);
   let likeClicked = false;
 
   let indie;
@@ -25,10 +25,10 @@ exports.getSearchedIndie = async (req, res, next) => {
     );
     return next(error);
   }
-  /* 
+
   let user;
   try {
-    user = await User.findById(userId);
+    user = await User.findOne({ _id: userId });
   } catch (err) {
     const error = new HttpError("Find logged in User failed.", 500);
     return next(error);
@@ -43,8 +43,9 @@ exports.getSearchedIndie = async (req, res, next) => {
 
   if (like.length > 0) {
     likeClicked = true;
-  } */
-  let like = [];
+  }
+
+  //let like = [];
 
   res.status(200).json({
     message: "Get Searched Indie's information complete!",
@@ -58,7 +59,8 @@ exports.getSearchedIndie = async (req, res, next) => {
     youtube: indie.youtube,
     instagram: indie.instagram,
     soundcloud: indie.soundcloud,
-    like: like.length,
+    like: indie.like.length,
+    likeClicked,
   });
 };
 
@@ -328,7 +330,7 @@ exports.deleteSupportMessage = async (req, res, next) => {
 
 exports.putIndieLike = async (req, res, next) => {
   const indieName = req.params.indieName;
-  const { userId } = req.body;
+  const userId = mongoose.Types.ObjectId(req.userData.userId);
 
   let indie;
   try {
@@ -401,5 +403,5 @@ exports.putIndieLike = async (req, res, next) => {
     }
   }
 
-  res.status(201).json({ message: "Put a like complete!", like });
+  res.status(201).json({ message: "Put a like complete!" });
 };

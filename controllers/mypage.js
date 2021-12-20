@@ -77,12 +77,15 @@ exports.getMyContactMessage = async (req, res, next) => {
     let title = el.title;
     let content = el.content;
     let nickname = el.nickname;
+
+    let id = el._id.toString();
     let createdDate = el.createdDate.toISOString();
     let replyStatus = el.reply;
     myContactMessageJson.push({
       title,
       content,
       nickname,
+      id,
       createdDate,
       replyStatus,
     });

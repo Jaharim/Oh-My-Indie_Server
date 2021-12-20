@@ -260,12 +260,60 @@ exports.getCompleteContactMessage = async (req, res, next) => {
     }
   });
 
-  console.log(contactMessageJson);
-
   res
     .status(200)
     .json({ message: "Get Support Message complete!", contactMessageJson });
 };
+
+exports.getReplyContent = async (req, res, next) => {
+  const id = req.params.contactId;
+  const contactId = mongoose.Types.ObjectId(id);
+  let contactMessage;
+  try {
+    contactMessage = await Contact.findOne({ _id: contactId });
+  } catch (err) {
+    const error = new HttpError("Finding a Contact message was failed", 500);
+    return next(error);
+  }
+  if (!contactMessage) {
+    const error = new HttpError(
+      "This Contact message could not be found.",
+      404
+    );
+    return next(error);
+  }
+
+  const content = contactMessage.reply;
+
+  res.status(200).json({ message: "Reply complete!", content });
+};
+/* 
+exports.editReplyContent = async (req, res, next) => {
+  const { content, id } = req.body;
+  const contactId = mongoose.Types.ObjectId(id);
+  let contactMessage;
+  try {
+    contactMessage = await Contact.findOne({ _id: contactId });
+  } catch (err) {
+    const error = new HttpError("Finding a Contact message was failed", 500);
+    return next(error);
+  }
+  if (!contactMessage) {
+    const error = new HttpError("This indie could not be found.", 404);
+    return next(error);
+  }
+
+  contactMessage.reply = content;
+
+  try {
+    await contactMessage.save();
+  } catch (err) {
+    const error = new HttpError("Saving the reply was failed", 500);
+    return next(error);
+  }
+
+  res.status(200).json({ message: "Reply complete!" });
+}; */
 
 exports.deleteContactMessage = async (req, res, next) => {
   const { id } = req.body;

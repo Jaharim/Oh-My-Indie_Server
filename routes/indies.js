@@ -17,13 +17,13 @@ const router = express.Router();
 
 router.get("/", indieController.getRandomIndie);
 
+router.use(checkAuth);
+
 router.get("/:indieName", indieController.getSearchedIndie);
 
 router.get("/:indieName/support", indieController.getSupportMessage);
 
-router.use(checkAuth);
-
-router.put("/:indieName/like", indieController.putIndieLike);
+router.get("/:indieName/like", indieController.putIndieLike);
 
 router.post(
   "/:indieName/support",

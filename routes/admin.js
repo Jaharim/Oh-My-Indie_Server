@@ -20,6 +20,10 @@ router.patch("/contact/reply", adminController.replyContactMessage);
 
 router.get("/contact/complete", adminController.getCompleteContactMessage);
 
+router.get("/contact/complete/:contactId", adminController.getReplyContent);
+/* 
+router.patch("/contact/complete/:contactId", adminController.editReplyContent); */
+
 router.get("/support", adminController.getSupportMessage);
 
 router.post("/addIndie", fileUpload.single("image"), adminController.postIndie);
