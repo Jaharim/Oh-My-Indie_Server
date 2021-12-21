@@ -119,7 +119,6 @@ exports.getSupportMessage = async (req, res, next) => {
     return next(error);
   }
   const indieId = indie._id;
-  console.log(indie._id);
 
   let supportMessage;
   try {
@@ -150,8 +149,6 @@ exports.getSupportMessage = async (req, res, next) => {
     let id = el._id.toString();
     supportMessageJson.push({ title, body, nickname, creator, id });
   });
-
-  console.log(supportMessageJson);
 
   res
     .status(200)
@@ -254,7 +251,18 @@ exports.editSupportMessage = async (req, res, next) => {
     return next(error);
   }
 
-  if (willBeEditedSupportMsg.creator.toString() !== req.userData.userId) {
+  let admin;
+  try {
+    admin = await User.findOne({ nickname: "admin" });
+  } catch (err) {
+    const error = new HttpError("Finding a admin was failed", 500);
+    return next(error);
+  }
+
+  if (
+    willBeEditedSupportMsg.creator._id.toString() !== req.userData.userId &&
+    admin._id.toString() !== req.userData.userId
+  ) {
     const error = new HttpError("You don't have a authentication.", 404);
     return next(error);
   }
@@ -287,7 +295,6 @@ exports.deleteSupportMessage = async (req, res, next) => {
     supportMessage = await Support.findById(id)
       .populate("creator")
       .populate("indieId");
-    console.log(supportMessage);
   } catch (err) {
     const error = new HttpError(
       "Finding Support Message by Support Message Id was failed,",
@@ -296,7 +303,18 @@ exports.deleteSupportMessage = async (req, res, next) => {
     return next(error);
   }
 
-  if (supportMessage.creator.toString() !== req.userData.userId) {
+  let admin;
+  try {
+    admin = await User.findOne({ nickname: "admin" });
+  } catch (err) {
+    const error = new HttpError("Finding a admin was failed", 500);
+    return next(error);
+  }
+
+  if (
+    supportMessage.creator._id.toString() !== req.userData.userId &&
+    admin._id.toString() !== req.userData.userId
+  ) {
     const error = new HttpError("You don't have a authentication.", 404);
     return next(error);
   }
