@@ -20,7 +20,9 @@ const fileUpload = multer({
   }),
   fileFilter: (req, file, cb) => {
     const isValid = !!MIME_TYPE_MAP[file.mimetype];
-    let error = isValid ? null : new Error("Invalid mime type!");
+    let error = isValid
+      ? null
+      : new Error("Image File의 확장자가 올바르지 않습니다.");
     cb(error, isValid);
   },
 });

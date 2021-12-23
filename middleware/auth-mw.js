@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
     if (!token) {
-      throw new Error("Authentication failed!");
+      throw new Error("로그인 후 이용해주세요.");
     }
     const decodedToken = jwt.verify(token, `${db.jwt_key}`);
     req.userData = {
@@ -17,7 +17,7 @@ module.exports = (req, res, next) => {
     };
     next();
   } catch (err) {
-    const error = new HttpError("Authentication failed!", 401);
+    const error = new HttpError("로그인 후 이용해주세요.", 401);
     return next(error);
   }
 };

@@ -38,11 +38,11 @@ exports.postIndie = async (req, res, next) => {
   try {
     await newIndie.save();
   } catch (err) {
-    const error = new HttpError("Posting a new Indie was failed", 500);
+    const error = new HttpError("Indie 등록에 실패했습니다.", 500);
     return next(error);
   }
 
-  res.status(201).json({ message: "Post a new Indie complete!" });
+  res.status(201).json({ message: "Indie 등록이 완료되었습니다." });
 };
 
 exports.getIndieInfo = async (req, res, next) => {
@@ -53,7 +53,7 @@ exports.getIndieInfo = async (req, res, next) => {
     willBeEditedIndie = await Indie.findOne({ name: indieName });
   } catch (err) {
     const error = new HttpError(
-      "Finding a Indie by this indieName was failed",
+      "입력된 Indie의 정보를 찾는 데 실패했습니다.",
       500
     );
     return next(error);
@@ -61,7 +61,7 @@ exports.getIndieInfo = async (req, res, next) => {
 
   if (!willBeEditedIndie) {
     const error = new HttpError(
-      "A Indie with this indieName could not be found.",
+      "입력된 Indie의 정보를 가져오는 데 실패습니다.",
       404
     );
     return next(error);
@@ -78,7 +78,7 @@ exports.editIndie = async (req, res, next) => {
     willBeEditedIndie = await Indie.findOne({ name: params });
   } catch (err) {
     const error = new HttpError(
-      "Finding a Indie by this indieName was failed",
+      "입력된 Indie의 정보를 찾는 데 실패했습니다.",
       500
     );
     return next(error);
@@ -86,7 +86,7 @@ exports.editIndie = async (req, res, next) => {
 
   if (!willBeEditedIndie) {
     const error = new HttpError(
-      "A Indie with this indieName could not be found.",
+      "입력된 Indie의 정보를 가져오는 데 실패했습니다.",
       404
     );
     return next(error);
@@ -131,16 +131,9 @@ exports.editIndie = async (req, res, next) => {
   try {
     await willBeEditedIndie.save();
   } catch (err) {
-    const error = new HttpError(
-      "Saving the Edited Indie Information was failed",
-      500
-    );
+    const error = new HttpError("수정된 내용을 저장하는 데 실패했습니다.", 500);
     return next(error);
   }
-  /* 
-  fs.unlink(imagePath, (err) => {
-    console.log(err);
-  });  */
 
   res.status(201).json({ indie: willBeEditedIndie });
 };
@@ -152,10 +145,7 @@ exports.deleteIndie = async (req, res, next) => {
   try {
     indieForDeleteImg = await Indie.findOne({ name: indieName });
   } catch (err) {
-    const error = new HttpError(
-      "Finding Indie For Deleting Image was failed",
-      500
-    );
+    const error = new HttpError("입력된 Indie를 찾는 데 실패습니다.", 500);
     return next(error);
   }
 
@@ -166,14 +156,11 @@ exports.deleteIndie = async (req, res, next) => {
   try {
     await Indie.deleteOne({ name: indieName });
   } catch (err) {
-    const error = new HttpError(
-      "Deleting a indie with this indieName was failed",
-      500
-    );
+    const error = new HttpError("입력된 Indie를 찾는 데 실패습니다.", 500);
     return next(error);
   }
 
-  res.status(204).json({ message: "delete completed!" });
+  res.status(204).json({ message: "Indie 삭제가 완료되었습니다." });
 };
 
 exports.getContactMessage = async (req, res, next) => {
@@ -181,11 +168,17 @@ exports.getContactMessage = async (req, res, next) => {
   try {
     contactMessages = await Contact.find();
   } catch (err) {
-    const error = new HttpError("Finding a Contact message was failed", 500);
+    const error = new HttpError(
+      "Contact 메시지들을 찾는 데 실패했습니다.",
+      500
+    );
     return next(error);
   }
   if (!contactMessages) {
-    const error = new HttpError("This indie could not be found.", 404);
+    const error = new HttpError(
+      "Contact 메시지들을 가져오는 데 실패했습니다.",
+      404
+    );
     return next(error);
   }
 
@@ -205,7 +198,7 @@ exports.getContactMessage = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ message: "Get Support Message complete!", contactMessageJson });
+    .json({ message: "Contact 메시지들을 가져왔습니다.", contactMessageJson });
 };
 
 exports.replyContactMessage = async (req, res, next) => {
@@ -215,11 +208,14 @@ exports.replyContactMessage = async (req, res, next) => {
   try {
     contactMessage = await Contact.findOne({ _id: contactId });
   } catch (err) {
-    const error = new HttpError("Finding a Contact message was failed", 500);
+    const error = new HttpError("Contact 메시지를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
   if (!contactMessage) {
-    const error = new HttpError("This indie could not be found.", 404);
+    const error = new HttpError(
+      "Contact 메시지를 가져오는 데 실패했습니다.",
+      404
+    );
     return next(error);
   }
 
@@ -228,11 +224,11 @@ exports.replyContactMessage = async (req, res, next) => {
   try {
     await contactMessage.save();
   } catch (err) {
-    const error = new HttpError("Saving the reply was failed", 500);
+    const error = new HttpError("답변을 저장하는 데 실패했습니다.", 500);
     return next(error);
   }
 
-  res.status(200).json({ message: "Reply complete!" });
+  res.status(200).json({ message: "답변을 완료했습니다." });
 };
 
 exports.getCompleteContactMessage = async (req, res, next) => {
@@ -240,11 +236,17 @@ exports.getCompleteContactMessage = async (req, res, next) => {
   try {
     contactMessages = await Contact.find();
   } catch (err) {
-    const error = new HttpError("Finding a Contact message was failed", 500);
+    const error = new HttpError(
+      "Contact 메시지들을 찾는 데 실패했습니다.",
+      500
+    );
     return next(error);
   }
   if (!contactMessages) {
-    const error = new HttpError("This indie could not be found.", 404);
+    const error = new HttpError(
+      "Contact 메시지들을 가져오는 데 실패했습니다.",
+      404
+    );
     return next(error);
   }
 
@@ -260,9 +262,10 @@ exports.getCompleteContactMessage = async (req, res, next) => {
     }
   });
 
-  res
-    .status(200)
-    .json({ message: "Get Support Message complete!", contactMessageJson });
+  res.status(200).json({
+    message: "답변이 있는 Contact 메시지들을 가져왔습니다.",
+    contactMessageJson,
+  });
 };
 
 exports.getReplyContent = async (req, res, next) => {
@@ -272,12 +275,12 @@ exports.getReplyContent = async (req, res, next) => {
   try {
     contactMessage = await Contact.findOne({ _id: contactId });
   } catch (err) {
-    const error = new HttpError("Finding a Contact message was failed", 500);
+    const error = new HttpError("Contact 메시지를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
   if (!contactMessage) {
     const error = new HttpError(
-      "This Contact message could not be found.",
+      "Contact 메시지를 가져오는 데 실패했습니다.",
       404
     );
     return next(error);
@@ -285,35 +288,10 @@ exports.getReplyContent = async (req, res, next) => {
 
   const content = contactMessage.reply;
 
-  res.status(200).json({ message: "Reply complete!", content });
+  res
+    .status(200)
+    .json({ message: "Contact 메시지의 답변을 가져왔습니다.", content });
 };
-/* 
-exports.editReplyContent = async (req, res, next) => {
-  const { content, id } = req.body;
-  const contactId = mongoose.Types.ObjectId(id);
-  let contactMessage;
-  try {
-    contactMessage = await Contact.findOne({ _id: contactId });
-  } catch (err) {
-    const error = new HttpError("Finding a Contact message was failed", 500);
-    return next(error);
-  }
-  if (!contactMessage) {
-    const error = new HttpError("This indie could not be found.", 404);
-    return next(error);
-  }
-
-  contactMessage.reply = content;
-
-  try {
-    await contactMessage.save();
-  } catch (err) {
-    const error = new HttpError("Saving the reply was failed", 500);
-    return next(error);
-  }
-
-  res.status(200).json({ message: "Reply complete!" });
-}; */
 
 exports.deleteContactMessage = async (req, res, next) => {
   const { id } = req.body;
@@ -322,11 +300,14 @@ exports.deleteContactMessage = async (req, res, next) => {
   try {
     contactMessages = await Contact.deleteOne({ _id: contactId });
   } catch (err) {
-    const error = new HttpError("Deleting a Contact message was failed", 500);
+    const error = new HttpError(
+      "Contact 메시지를 삭제하는 데 실패했습니다.",
+      500
+    );
     return next(error);
   }
 
-  res.status(200).json({ message: "Delete Contact Message complete!" });
+  res.status(200).json({ message: "Contact 메시지를 삭제했습니다." });
 };
 
 exports.getSupportMessage = async (req, res, next) => {
@@ -334,11 +315,17 @@ exports.getSupportMessage = async (req, res, next) => {
   try {
     supportMessages = await Support.find();
   } catch (err) {
-    const error = new HttpError("Finding a support message was failed", 500);
+    const error = new HttpError(
+      "Support 메시지들을 찾는 데 실패했습니다.",
+      500
+    );
     return next(error);
   }
   if (!supportMessages) {
-    const error = new HttpError("This indie could not be found.", 404);
+    const error = new HttpError(
+      "Support 메시지들을 가져오는 데 실패했습니다.",
+      404
+    );
     return next(error);
   }
 
@@ -351,7 +338,7 @@ exports.getSupportMessage = async (req, res, next) => {
       try {
         indie = await Indie.findOne({ _id: el.indieId });
       } catch (err) {
-        const error = new HttpError("Finding a indieName was failed", 500);
+        const error = new HttpError("Indie를 찾는 데 실패했습니다.", 500);
         return next(error);
       }
       let title = el.title;
@@ -375,5 +362,5 @@ exports.getSupportMessage = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ message: "Get Support Message complete!", supportMessageJson });
+    .json({ message: "Support 메시지들을 가져왔습니다.", supportMessageJson });
 };

@@ -9,7 +9,7 @@ const User = require("../models/user");
 exports.signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const error = new HttpError("Validation failed.", 422);
+    const error = new HttpError("유효하지 않은 입력이 있습니다.", 422);
     return next(error);
   }
 
@@ -21,7 +21,10 @@ exports.signup = async (req, res, next) => {
   try {
     hashedPw = await bcrypt.hash(password, 12);
   } catch (err) {
-    const error = new HttpError("Password hashing Error.", 500);
+    const error = new HttpError(
+      "비밀번호를 Hashing 하는 데 실패했습니다.",
+      500
+    );
     return next(error);
   }
 
@@ -34,7 +37,7 @@ exports.signup = async (req, res, next) => {
   try {
     await user.save();
   } catch (err) {
-    const error = new HttpError("Couldn't save the signed up User.", 500);
+    const error = new HttpError("회원가입에 실패했습니다.", 500);
     return next(error);
   }
 
@@ -49,12 +52,12 @@ exports.signup = async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
-    const error = new HttpError("Getting token from jwt was failed.", 500);
+    const error = new HttpError("user token을 생성하는 데 실패했습니다.", 500);
     return next(error);
   }
 
   res.status(201).json({
-    message: "User created!",
+    message: "회원가입이 완료되었습니다.",
     userId: user.id,
     token: token,
     email: user.email,
@@ -70,15 +73,12 @@ exports.login = async (req, res, next) => {
   try {
     user = await User.findOne({ email: email });
   } catch (err) {
-    const error = new HttpError("Couldn't find the User.", 500);
+    const error = new HttpError("E-mail을 찾을 수 없습니다.", 500);
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError(
-      "A user with this email could not be found.",
-      401
-    );
+    const error = new HttpError("E-mail을 찾을 수 없습니다.", 401);
     return next(error);
   }
 
@@ -87,15 +87,12 @@ exports.login = async (req, res, next) => {
   try {
     passwordCheck = await bcrypt.compare(password, user.password);
   } catch (err) {
-    const error = new HttpError("Password Checking Error.", 500);
+    const error = new HttpError("올바른 비밀번호를 입력해주세요.", 500);
     return next(error);
   }
 
   if (!passwordCheck) {
-    const error = new HttpError(
-      "Invalid credentials, could not log you in",
-      401
-    );
+    const error = new HttpError("올바른 비밀번호를 입력해주세요.", 401);
     return next(error);
   }
 
@@ -110,7 +107,7 @@ exports.login = async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
-    const error = new HttpError("Getting token from jwt was failed.", 500);
+    const error = new HttpError("user token을 생성하는 데 실패했습니다.", 500);
     return next(error);
   }
 

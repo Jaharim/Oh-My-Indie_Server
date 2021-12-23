@@ -8,7 +8,7 @@ const User = require("../models/user");
 exports.submitContactMessage = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const error = new HttpError("Validation failed.", 422);
+    const error = new HttpError("유효하지 않은 입력이 있습니다.", 422);
     return next(error);
   }
   const { title, content } = req.body;
@@ -18,11 +18,11 @@ exports.submitContactMessage = async (req, res, next) => {
   try {
     user = await User.findById({ _id: userId });
   } catch (err) {
-    const error = new HttpError("Finding User Data was failed.", 500);
+    const error = new HttpError("회원정보를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
   if (!user) {
-    const error = new HttpError("A User could not be found.", 404);
+    const error = new HttpError("회원정보를 찾는 데 실패했습니다.", 404);
     return next(error);
   }
 
@@ -42,7 +42,7 @@ exports.submitContactMessage = async (req, res, next) => {
     await contactMessage.save();
   } catch (err) {
     const error = new HttpError(
-      "Saving(Submitting) a Contact Message was failed.",
+      "Contact 메시지를 제출하는 데 실패했습니다.",
       500
     );
     return next(error);

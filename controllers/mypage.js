@@ -13,11 +13,11 @@ exports.getMySupportMessage = async (req, res, next) => {
   try {
     mySupportMessage = await Support.find({ creator: userId });
   } catch (err) {
-    const error = new HttpError("Finding a my support message was failed", 500);
+    const error = new HttpError("Support 메시지를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
   if (!mySupportMessage) {
-    const error = new HttpError("This indie could not be found.", 404);
+    const error = new HttpError("Support 메시지를 찾는 데 실패했습니다.", 404);
     return next(error);
   }
 
@@ -30,7 +30,7 @@ exports.getMySupportMessage = async (req, res, next) => {
       try {
         indie = await Indie.findOne({ _id: el.indieId });
       } catch (err) {
-        const error = new HttpError("Finding a indieName was failed", 500);
+        const error = new HttpError("Indie를 찾는 데 실패했습니다.", 500);
         return next(error);
       }
       let title = el.title;
@@ -53,7 +53,7 @@ exports.getMySupportMessage = async (req, res, next) => {
   console.log(mySupportMessageJson);
 
   res.status(200).json({
-    message: "Get Support Message complete!",
+    message: "Support 메시지를 불러왔습니다.",
     mySupportMessageJson,
   });
 };
@@ -64,11 +64,11 @@ exports.getMyContactMessage = async (req, res, next) => {
   try {
     contactMessages = await Contact.find({ creator: userId });
   } catch (err) {
-    const error = new HttpError("Finding a Contact message was failed", 500);
+    const error = new HttpError("Contact 메시지를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
   if (!contactMessages) {
-    const error = new HttpError("This indie could not be found.", 404);
+    const error = new HttpError("Contact 메시지를 찾는 데 실패했습니다.", 404);
     return next(error);
   }
 
@@ -95,5 +95,5 @@ exports.getMyContactMessage = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ message: "Get Support Message complete!", myContactMessageJson });
+    .json({ message: "Contact 메시지를 불러왔습니다.", myContactMessageJson });
 };

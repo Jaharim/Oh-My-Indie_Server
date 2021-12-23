@@ -14,15 +14,12 @@ exports.getSearchedIndie = async (req, res, next) => {
   try {
     indie = await Indie.findOne({ name: indieName });
   } catch (err) {
-    const error = new HttpError("Finding indie information was failed.", 500);
+    const error = new HttpError("입력된 Indie를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
 
   if (!indie) {
-    const error = new HttpError(
-      "A Indie with this indieName could not be found.",
-      404
-    );
+    const error = new HttpError("입력된 Indie를 찾는 데 실패했습니다.", 404);
     return next(error);
   }
 
@@ -30,12 +27,12 @@ exports.getSearchedIndie = async (req, res, next) => {
   try {
     user = await User.findOne({ _id: userId });
   } catch (err) {
-    const error = new HttpError("Find logged in User failed.", 500);
+    const error = new HttpError("회원정보를 찾는 데 실패했습니다. ", 500);
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError("A User with this id could not be found.", 404);
+    const error = new HttpError("회원정보를 찾는 데 실패했습니다.", 404);
     return next(error);
   }
 
@@ -45,10 +42,8 @@ exports.getSearchedIndie = async (req, res, next) => {
     likeClicked = true;
   }
 
-  //let like = [];
-
   res.status(200).json({
-    message: "Get Searched Indie's information complete!",
+    message: "입력된 Indie의 정보를 가져왔습니다.",
     number: indie.number,
     name: indie.name,
     image: indie.image,
@@ -69,7 +64,7 @@ exports.getRandomIndie = async (req, res, next) => {
   try {
     indieCount = await Indie.find().countDocuments();
   } catch (err) {
-    const error = new HttpError("Indies Counting failed.", 500);
+    const error = new HttpError("Indie counting을 하는 데 실패했습니다.", 500);
     return next(error);
   }
 
@@ -79,13 +74,16 @@ exports.getRandomIndie = async (req, res, next) => {
   try {
     randomIndie = await Indie.find().skip(randomIndieNumber).limit(1);
   } catch (err) {
-    const error = new HttpError("Bringing Random Indie failed.", 500);
+    const error = new HttpError(
+      "무작위로 Indie 정보를 불러오는 데 실패했습니다.",
+      500
+    );
     return next(error);
   }
-  console.log(randomIndie);
+
   if (!randomIndie) {
     const error = new HttpError(
-      "A Random Indie with this random indieNumber could not be found.",
+      "무작위로 Indie 정보를 불러오는 데 실패했습니다.",
       404
     );
     return next(error);
@@ -94,7 +92,7 @@ exports.getRandomIndie = async (req, res, next) => {
   const likeNumber = randomIndie[0].like.length;
 
   res.status(200).json({
-    message: "Get Randome Indie's information complete!",
+    message: "무작위로 Indie 정보를 불러왔습니다.",
     name: randomIndie[0].name,
     image: randomIndie[0].image,
     like: likeNumber,
@@ -108,14 +106,11 @@ exports.getSupportMessage = async (req, res, next) => {
   try {
     indie = await Indie.findOne({ name: indieName });
   } catch (err) {
-    const error = new HttpError(
-      "Finding a Indie by this indie name was failed",
-      500
-    );
+    const error = new HttpError("Indie를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
   if (!indie) {
-    const error = new HttpError("This indie could not be found.", 404);
+    const error = new HttpError("Indie를 찾는 데 실패했습니다.", 404);
     return next(error);
   }
   const indieId = indie._id;
@@ -127,7 +122,7 @@ exports.getSupportMessage = async (req, res, next) => {
     });
   } catch (err) {
     const error = new HttpError(
-      "Finding a Support Message by this indie name was failed",
+      "해당 Indie의 Support 메시지들을 찾는 데 실패했습니다.",
       500
     );
     return next(error);
@@ -135,7 +130,7 @@ exports.getSupportMessage = async (req, res, next) => {
 
   if (!supportMessage) {
     const error = new HttpError(
-      "This indie's Support Messages could not be found.",
+      "해당 Indie의 Support 메시지들을 찾는 데 실패했습니다.",
       404
     );
     return next(error);
@@ -152,7 +147,7 @@ exports.getSupportMessage = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ message: "Get Support Message complete!", supportMessageJson });
+    .json({ message: "Support 메시지들을 불러왔습니다.", supportMessageJson });
 };
 
 exports.postSupportMessage = async (req, res, next) => {
@@ -163,15 +158,12 @@ exports.postSupportMessage = async (req, res, next) => {
   try {
     indie = await Indie.findOne({ name: indieName });
   } catch (err) {
-    const error = new HttpError("Finding a indie by indieName was failed", 500);
+    const error = new HttpError("Indie를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
 
   if (!indie) {
-    const error = new HttpError(
-      "A Indie with this indieName could not be found.",
-      404
-    );
+    const error = new HttpError("Indie를 찾는 데 실패했습니다.", 404);
     return next(error);
   }
 
@@ -180,18 +172,12 @@ exports.postSupportMessage = async (req, res, next) => {
   try {
     user = await User.findById(req.userData.userId);
   } catch (err) {
-    const error = new HttpError(
-      "Finding a user by creator Id was failed,",
-      500
-    );
+    const error = new HttpError("회원정보를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError(
-      "A User with this creator id could not be found.",
-      404
-    );
+    const error = new HttpError("회원정보를 찾는 데 실패했습니다.", 404);
     return next(error);
   }
 
@@ -221,14 +207,14 @@ exports.postSupportMessage = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      "Inserting SupportMessage's Id Related Collection was failed",
+      "Support 메시지의 Id를 User, Indie collection에 추가하는 데 실패했습니다.",
       500
     );
     return next(error);
   }
 
   res.status(201).json({
-    message: "Post Support Message complete!",
+    message: "Support 메시지를 남겼습니다.",
     title: supportMessage.title,
     message: supportMessage.message,
     creator: user.nickname,
@@ -245,7 +231,7 @@ exports.editSupportMessage = async (req, res, next) => {
     });
   } catch (err) {
     const error = new HttpError(
-      "Finding a SupportMsg by this id was failed",
+      "수정될 Support 메시지를 찾는 데 실패했습니다.",
       500
     );
     return next(error);
@@ -255,7 +241,7 @@ exports.editSupportMessage = async (req, res, next) => {
   try {
     admin = await User.findOne({ nickname: "admin" });
   } catch (err) {
-    const error = new HttpError("Finding a admin was failed", 500);
+    const error = new HttpError("admin을 찾는 데 실패했습니다.", 500);
     return next(error);
   }
 
@@ -263,12 +249,16 @@ exports.editSupportMessage = async (req, res, next) => {
     willBeEditedSupportMsg.creator._id.toString() !== req.userData.userId &&
     admin._id.toString() !== req.userData.userId
   ) {
-    const error = new HttpError("You don't have a authentication.", 404);
+    const error = new HttpError(
+      "해당 Support 메시지를 수정할 권한이 없습니다.",
+      404
+    );
     return next(error);
   }
+
   if (!willBeEditedSupportMsg) {
     const error = new HttpError(
-      "A SupportMsg with this id could not be found.",
+      "수정될 Support 메시지를 찾는 데 실패했습니다.",
       404
     );
     return next(error);
@@ -280,11 +270,11 @@ exports.editSupportMessage = async (req, res, next) => {
   try {
     await willBeEditedSupportMsg.save();
   } catch (err) {
-    const error = new HttpError("Saving the Edited SupportMsg was failed", 500);
+    const error = new HttpError("수정된 내용을 저장하는 데 실패했습니다.", 500);
     return next(error);
   }
 
-  res.status(201).json({ message: "edit support message complete!" });
+  res.status(201).json({ message: "Support 메시지를 수정했습니다." });
 };
 
 exports.deleteSupportMessage = async (req, res, next) => {
@@ -297,7 +287,7 @@ exports.deleteSupportMessage = async (req, res, next) => {
       .populate("indieId");
   } catch (err) {
     const error = new HttpError(
-      "Finding Support Message by Support Message Id was failed,",
+      "삭제될 Support 메시지를 찾는 데 실패했습니다.",
       500
     );
     return next(error);
@@ -307,7 +297,7 @@ exports.deleteSupportMessage = async (req, res, next) => {
   try {
     admin = await User.findOne({ nickname: "admin" });
   } catch (err) {
-    const error = new HttpError("Finding a admin was failed", 500);
+    const error = new HttpError("admin을 찾는 데 실패했습니다.", 500);
     return next(error);
   }
 
@@ -315,12 +305,18 @@ exports.deleteSupportMessage = async (req, res, next) => {
     supportMessage.creator._id.toString() !== req.userData.userId &&
     admin._id.toString() !== req.userData.userId
   ) {
-    const error = new HttpError("You don't have a authentication.", 404);
+    const error = new HttpError(
+      "해당 Support 메시지를 삭제할 권한이 없습니다.",
+      404
+    );
     return next(error);
   }
 
   if (!supportMessage) {
-    const error = new HttpError("Could not find Support Message", 404);
+    const error = new HttpError(
+      "삭제될 Support 메시지를 찾는 데 실패했습니다.",
+      404
+    );
     return next(error);
   }
 
@@ -335,7 +331,7 @@ exports.deleteSupportMessage = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      "Deleting User and Indie collection's Support Message Id was failed",
+      "Support 메시지의 Id를 User, Indie collection에서 삭제하는 데 실패했습니다.",
       500
     );
     return next(error);
@@ -343,7 +339,7 @@ exports.deleteSupportMessage = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ message: "Delete Support Message Complete!", supportMessage });
+    .json({ message: "Support 메시지를 삭제했습니다.", supportMessage });
 };
 
 exports.putIndieLike = async (req, res, next) => {
@@ -354,18 +350,12 @@ exports.putIndieLike = async (req, res, next) => {
   try {
     indie = await Indie.findOne({ name: indieName });
   } catch (err) {
-    const error = new HttpError(
-      "Finding a Indie by indieName was failed.",
-      500
-    );
+    const error = new HttpError("Indie를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
 
   if (!indie) {
-    const error = new HttpError(
-      "A Indie with this indieName could not be found.",
-      404
-    );
+    const error = new HttpError("Indie를 찾는 데 실패했습니다.", 404);
     return next(error);
   }
 
@@ -373,12 +363,12 @@ exports.putIndieLike = async (req, res, next) => {
   try {
     user = await User.findById(userId);
   } catch (err) {
-    const error = new HttpError("Finding a User by Id was failed", 500);
+    const error = new HttpError("회원정보를 찾는 데 실패했습니다.", 500);
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError("A User with this id could not be found.", 404);
+    const error = new HttpError("회원정보를 찾는 데 실패했습니다.", 404);
     return next(error);
   }
 
@@ -387,7 +377,7 @@ exports.putIndieLike = async (req, res, next) => {
     like = await user.like.filter((p) => p.toString() === indie._id.toString());
   } catch (err) {
     const error = new HttpError(
-      "Filtering a User's Id in this Indie's like collection.",
+      "user의 like collection에서 회원정보를 찾는 데 실패했습니다.",
       500
     );
     return next(error);
@@ -401,7 +391,7 @@ exports.putIndieLike = async (req, res, next) => {
       await indie.save();
     } catch (err) {
       const error = new HttpError(
-        "Saving a User and Indie's like collection status was failed (Pulling a like)",
+        "user와 indie의 like collection에서 서로의 id를 제거한 뒤 저장하는 데 실패했습니다.",
         500
       );
       return next(error);
@@ -414,12 +404,12 @@ exports.putIndieLike = async (req, res, next) => {
       await indie.save();
     } catch (err) {
       const error = new HttpError(
-        "Saving a User and Indie's like collection status was failed (Pushing a like)",
+        "user와 indie의 like collection에서 서로의 id를 추가한 뒤 저장하는 데 실패했습니다.",
         500
       );
       return next(error);
     }
   }
 
-  res.status(201).json({ message: "Put a like complete!" });
+  res.status(201).json({ message: "like 처리를 완료했습니다." });
 };
