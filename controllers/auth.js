@@ -7,15 +7,41 @@ const HttpError = require("../models/http-error");
 const User = require("../models/user");
 
 exports.signup = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new HttpError("유효하지 않은 입력이 있습니다.", 422);
-    return next(error);
-  }
-
   const email = req.body.email;
   const nickname = req.body.nickname;
   const password = req.body.password;
+
+  let nicknameCheck;
+  try {
+    nicknameCheck = await User.findOne({ nickname: nickname });
+  } catch (err) {
+    const error = new HttpError(
+      "회원들의 닉네임을 조회하는 데 실패했습니다.",
+      500
+    );
+    return next(error);
+  }
+
+  if (nicknameCheck) {
+    const error = new HttpError("이미 사용중인 닉네임입니다.", 401);
+    return next(error);
+  }
+
+  let emailCheck;
+  try {
+    emailCheck = await User.findOne({ email: email });
+  } catch (err) {
+    const error = new HttpError(
+      "회원들의 이메일을 조회하는 데 실패했습니다.",
+      500
+    );
+    return next(error);
+  }
+
+  if (emailCheck) {
+    const error = new HttpError("이미 가입된 이메일입니다.", 401);
+    return next(error);
+  }
 
   let hashedPw;
   try {
@@ -25,6 +51,12 @@ exports.signup = async (req, res, next) => {
       "비밀번호를 Hashing 하는 데 실패했습니다.",
       500
     );
+    return next(error);
+  }
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new HttpError("유효하지 않은 입력이 있습니다.", 422);
     return next(error);
   }
 
@@ -73,12 +105,12 @@ exports.login = async (req, res, next) => {
   try {
     user = await User.findOne({ email: email });
   } catch (err) {
-    const error = new HttpError("E-mail을 찾을 수 없습니다.", 500);
+    const error = new HttpError("이메일을 찾을 수 없습니다.", 500);
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError("E-mail을 찾을 수 없습니다.", 401);
+    const error = new HttpError("이메일을 찾을 수 없습니다.", 401);
     return next(error);
   }
 
