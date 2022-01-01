@@ -30,17 +30,22 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 app.use(express.json());
 
-app.use("/uploads/images", express.static(path.join("uploads", "images")));
+app.use(
+  "/uploads/images",
+  express.static(path.join(__dirname, "uploads", "images"))
+);
+
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use("/admin", adminRoutes);
 app.use("/indie", indieRoutes);
 app.use("/auth", authRoutes);
 app.use("/contact", contactRoutes);
 app.use("/mypage", mypageRoutes);
-
+/* 
 app.get("*", function (req, res) {
   res.sendFile(__dirname + "/index.html");
-});
+}); */
 
 app.use((error, req, res, next) => {
   console.log(error);
@@ -60,4 +65,4 @@ mongoose
   .then((result) => {
     app.listen(5000);
   })
-  .catch((err) => console.log(err));
+  .catch((err) => console.log("서버가 응답하지 않습니다."));
