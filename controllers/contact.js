@@ -36,8 +36,6 @@ exports.submitContactMessage = async (req, res, next) => {
     creator: req.userData.userId,
   });
 
-  console.log(contactMessage);
-
   try {
     await contactMessage.save();
   } catch (err) {

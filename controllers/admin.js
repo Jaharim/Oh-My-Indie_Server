@@ -115,8 +115,6 @@ exports.editIndie = async (req, res, next) => {
     imagePath = req.file.path;
   }
 
-  console.log(imagePath);
-
   willBeEditedIndie.number = number;
   willBeEditedIndie.name = name;
   willBeEditedIndie.image = imagePath;
@@ -193,8 +191,6 @@ exports.getContactMessage = async (req, res, next) => {
       contactMessageJson.push({ title, content, nickname, createdDate, id });
     }
   });
-
-  console.log(contactMessageJson);
 
   res
     .status(200)
@@ -357,8 +353,6 @@ exports.getSupportMessage = async (req, res, next) => {
       });
     })
   );
-
-  console.log(supportMessageJson);
 
   res
     .status(200)

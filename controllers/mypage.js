@@ -50,8 +50,6 @@ exports.getMySupportMessage = async (req, res, next) => {
     })
   );
 
-  console.log(mySupportMessageJson);
-
   res.status(200).json({
     message: "Support 메시지를 불러왔습니다.",
     mySupportMessageJson,
@@ -90,8 +88,6 @@ exports.getMyContactMessage = async (req, res, next) => {
       replyStatus,
     });
   });
-
-  console.log(myContactMessageJson);
 
   res
     .status(200)

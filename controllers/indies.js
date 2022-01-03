@@ -182,9 +182,7 @@ exports.postSupportMessage = async (req, res, next) => {
   }
 
   indieId = indie._id;
-  console.log(indieId);
   const userId = mongoose.Types.ObjectId(req.userData.userId);
-  console.log(userId);
   const nickname = user.nickname;
 
   const supportMessage = new Support({

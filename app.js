@@ -42,10 +42,6 @@ app.use("/indie", indieRoutes);
 app.use("/auth", authRoutes);
 app.use("/contact", contactRoutes);
 app.use("/mypage", mypageRoutes);
-/* 
-app.get("*", function (req, res) {
-  res.sendFile(__dirname + "/index.html");
-}); */
 
 app.use((error, req, res, next) => {
   console.log(error);
