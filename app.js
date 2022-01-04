@@ -4,7 +4,6 @@ const path = require("path");
 const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoKey = require("./config/keys");
 
 const adminRoutes = require("./routes/admin");
 const indieRoutes = require("./routes/indies");

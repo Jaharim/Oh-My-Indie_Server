@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const db = require("../config/keys");
 const HttpError = require("../models/http-error");
 
 module.exports = (req, res, next) => {
