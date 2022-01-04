@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
     if (!token) {
       throw new Error("로그인 후 이용해주세요.");
     }
-    const decodedToken = jwt.verify(token, `${db.jwt_key}`);
+    const decodedToken = jwt.verify(token, `${process.env.JWT_KEY}`);
     req.userData = {
       userId: decodedToken.userId,
     };

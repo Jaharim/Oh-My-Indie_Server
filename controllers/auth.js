@@ -80,7 +80,7 @@ exports.signup = async (req, res, next) => {
         email: user.email,
         userId: user.id,
       },
-      `${db.jwt_key}`,
+      `${process.env.JWT_KEY}`,
       { expiresIn: "1h" }
     );
   } catch (err) {
@@ -135,7 +135,7 @@ exports.login = async (req, res, next) => {
         email: loadedUser.email,
         userId: loadedUser.id,
       },
-      `${db.jwt_key}`,
+      `${process.env.JWT_KEY}`,
       { expiresIn: "1h" }
     );
   } catch (err) {
