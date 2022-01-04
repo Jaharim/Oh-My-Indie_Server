@@ -59,6 +59,6 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(mongoKey.keys)
   .then((result) => {
-    app.listen(5000);
+    app.listen(process.env.PORT || 5000);
   })
   .catch((err) => console.log("서버가 응답하지 않습니다."));
