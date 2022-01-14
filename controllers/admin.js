@@ -158,7 +158,7 @@ exports.deleteIndie = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(204).json({ message: "Indie 삭제가 완료되었습니다." });
+  res.status(200).json({ message: "Indie 삭제가 완료되었습니다." });
 };
 
 exports.getContactMessage = async (req, res, next) => {
