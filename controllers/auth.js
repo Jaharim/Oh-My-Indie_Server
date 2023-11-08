@@ -1,9 +1,10 @@
-const { validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+require('dotenv').config();
+const { validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const HttpError = require("../models/http-error");
-const User = require("../models/user");
+const HttpError = require('../models/http-error');
+const User = require('../models/user');
 
 exports.signup = async (req, res, next) => {
   const email = req.body.email;
@@ -15,14 +16,14 @@ exports.signup = async (req, res, next) => {
     nicknameCheck = await User.findOne({ nickname: nickname });
   } catch (err) {
     const error = new HttpError(
-      "회원들의 닉네임을 조회하는 데 실패했습니다.",
+      '회원들의 닉네임을 조회하는 데 실패했습니다.',
       500
     );
     return next(error);
   }
 
   if (nicknameCheck) {
-    const error = new HttpError("이미 사용중인 닉네임입니다.", 401);
+    const error = new HttpError('이미 사용중인 닉네임입니다.', 401);
     return next(error);
   }
 
@@ -31,14 +32,14 @@ exports.signup = async (req, res, next) => {
     emailCheck = await User.findOne({ email: email });
   } catch (err) {
     const error = new HttpError(
-      "회원들의 이메일을 조회하는 데 실패했습니다.",
+      '회원들의 이메일을 조회하는 데 실패했습니다.',
       500
     );
     return next(error);
   }
 
   if (emailCheck) {
-    const error = new HttpError("이미 가입된 이메일입니다.", 401);
+    const error = new HttpError('이미 가입된 이메일입니다.', 401);
     return next(error);
   }
 
@@ -47,7 +48,7 @@ exports.signup = async (req, res, next) => {
     hashedPw = await bcrypt.hash(password, 12);
   } catch (err) {
     const error = new HttpError(
-      "비밀번호를 Hashing 하는 데 실패했습니다.",
+      '비밀번호를 Hashing 하는 데 실패했습니다.',
       500
     );
     return next(error);
@@ -55,7 +56,7 @@ exports.signup = async (req, res, next) => {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const error = new HttpError("유효하지 않은 입력이 있습니다.", 422);
+    const error = new HttpError('유효하지 않은 입력이 있습니다.', 422);
     return next(error);
   }
 
@@ -68,7 +69,7 @@ exports.signup = async (req, res, next) => {
   try {
     await user.save();
   } catch (err) {
-    const error = new HttpError("회원가입에 실패했습니다.", 500);
+    const error = new HttpError('회원가입에 실패했습니다.', 500);
     return next(error);
   }
 
@@ -80,15 +81,15 @@ exports.signup = async (req, res, next) => {
         userId: user.id,
       },
       `${process.env.JWT_KEY}`,
-      { expiresIn: "1h" }
+      { expiresIn: '1h' }
     );
   } catch (err) {
-    const error = new HttpError("user token을 생성하는 데 실패했습니다.", 500);
+    const error = new HttpError('user token을 생성하는 데 실패했습니다.', 500);
     return next(error);
   }
 
   res.status(201).json({
-    message: "회원가입이 완료되었습니다.",
+    message: '회원가입이 완료되었습니다.',
     userId: user.id,
     token: token,
     email: user.email,
@@ -104,12 +105,12 @@ exports.login = async (req, res, next) => {
   try {
     user = await User.findOne({ email: email });
   } catch (err) {
-    const error = new HttpError("이메일을 찾을 수 없습니다.", 500);
+    const error = new HttpError('이메일을 찾을 수 없습니다.', 500);
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError("이메일을 찾을 수 없습니다.", 401);
+    const error = new HttpError('이메일을 찾을 수 없습니다.', 401);
     return next(error);
   }
 
@@ -118,12 +119,12 @@ exports.login = async (req, res, next) => {
   try {
     passwordCheck = await bcrypt.compare(password, user.password);
   } catch (err) {
-    const error = new HttpError("올바른 비밀번호를 입력해주세요.", 500);
+    const error = new HttpError('올바른 비밀번호를 입력해주세요.', 500);
     return next(error);
   }
 
   if (!passwordCheck) {
-    const error = new HttpError("올바른 비밀번호를 입력해주세요.", 401);
+    const error = new HttpError('올바른 비밀번호를 입력해주세요.', 401);
     return next(error);
   }
 
@@ -135,10 +136,10 @@ exports.login = async (req, res, next) => {
         userId: loadedUser.id,
       },
       `${process.env.JWT_KEY}`,
-      { expiresIn: "1h" }
+      { expiresIn: '1h' }
     );
   } catch (err) {
-    const error = new HttpError("user token을 생성하는 데 실패했습니다.", 500);
+    const error = new HttpError('user token을 생성하는 데 실패했습니다.', 500);
     return next(error);
   }
 
